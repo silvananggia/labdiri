@@ -29,7 +29,6 @@ const DefaultRoute = "/home";
 
 const Home = lazy(() => import("../../views/Home"));
 const Login = lazy(() => import("../../views/Login"));
-const Register = lazy(() => import("../../views/Register"));
 const NotAuthorized = lazy(() => import("../../views/NotAuthorized"));
 const ForgotPassword = lazy(() => import("../../views/ForgotPassword"));
 const Error = lazy(() => import("../../views/Error"));
