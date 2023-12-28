@@ -67,10 +67,10 @@ export const getUserData = () => JSON.parse(localStorage.getItem("user"));
  */
 export const getHomeRouteForLoggedInUser = (userRole) => {
   if (userRole === "admin") return DefaultRoute;
-  if (userRole === "koordinator") return "/home/koordinator";
-  if (userRole === "manajer") return "/home-manajer";
-  if (userRole === "public") return "/home-public";
-  return "/home/login";
+  if (userRole === "koordinator") return "/admin/home/koordinator";
+  if (userRole === "manajer") return "/admin/home-manajer";
+  if (userRole === "public") return "/admin/home-public";
+  return "/admin/home/login";
 };
 
 // ** React Select Theme Colors

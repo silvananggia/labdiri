@@ -37,7 +37,7 @@ const Router = () => {
 
   const routes = useRoutes([
     {
-      path: '/',
+      path: '/admin',
       index: true,
       element: <Navigate replace to={getHomeRoute()} />
     },
@@ -48,9 +48,9 @@ const Router = () => {
     },
   
     {
-      path: '/auth/not-auth',
+      path: '/admin/auth/not-auth',
       element: <BlankLayout />,
-      children: [{ path: '/auth/not-auth', element: <NotAuthorized /> }]
+      children: [{ path: '/admin/auth/not-auth', element: <NotAuthorized /> }]
     },
     {
       path: '*',

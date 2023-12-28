@@ -25,7 +25,7 @@ const getLayout = {
 const TemplateTitle = "%s - BRIN";
 
 // ** Default Route
-const DefaultRoute = "/home";
+const DefaultRoute = "/admin/home";
 
 const Home = lazy(() => import("../../views/Home"));
 const Login = lazy(() => import("../../views/Login"));
@@ -55,12 +55,12 @@ const UserUpdate = lazy(() => import("../../views/User/UserUpdate"));
 // ** Merge Routes
 const Routes = [
   {
-    path: "/",
+    path: "/admin",
     index: true,
     element: <Navigate replace to={DefaultRoute} />,
   },
   {
-    path: "/home",
+    path: "/admin/home",
     element: <Home />,
     meta: {
       action: 'read',
@@ -68,7 +68,7 @@ const Routes = [
     }
   },
   {
-    path: "/home/koordinator",
+    path: "/admin/home/koordinator",
     element: <Home />,
     meta: {
       action: 'read',
@@ -76,19 +76,19 @@ const Routes = [
     }
   },
   {
-    path: "/logbook-alat",
+    path: "/admin/logbook-alat",
     element: <NotAuthorized />,
   },
     {
-    path: "/maintenance",
+    path: "/admin/maintenance",
     element: <NotAuthorized />,
   },
   {
-    path: "/kalibrasi",
+    path: "/admin/kalibrasi",
     element: <NotAuthorized />,
   },
   {
-    path: "/kategori-lab",
+    path: "/admin/kategori-lab",
     element: <KategoriLab />,
     meta: {
       action: 'read',
@@ -96,7 +96,7 @@ const Routes = [
     }
   },
   {
-    path: "/profile",
+    path: "/admin/profile",
     element: <Profile />,
     meta: {
       action: 'read',
@@ -104,7 +104,7 @@ const Routes = [
     }
   },
   {
-    path: "/lokasi",
+    path: "/admin/lokasi",
     element: <Lokasi />,
     meta: {
       action: 'read',
@@ -112,7 +112,7 @@ const Routes = [
     }
   },
   {
-    path: "/lokasi/add",
+    path: "/admin/lokasi/add",
     element: <LokasiCreate />,
     meta: {
       action: 'add',
@@ -120,7 +120,7 @@ const Routes = [
     }
   },
   {
-    path: "/lokasi/edit/:code",
+    path: "/admin/lokasi/edit/:code",
     element: <LokasiUpdate />,
     meta: {
       action: 'update',
@@ -128,7 +128,7 @@ const Routes = [
     }
   },
   {
-    path: "/laboratorium",
+    path: "/admin/laboratorium",
     element: <Laboratorium />,
     meta: {
       action: 'read',
@@ -136,7 +136,7 @@ const Routes = [
     }
   },
   {
-    path: "/profilelab",
+    path: "/admin/profilelab",
     element: <ProfileLab />,
     meta: {
       action: 'read',
@@ -144,7 +144,7 @@ const Routes = [
     }
   },
   {
-    path: "/laboratorium/view/:code",
+    path: "/admin/laboratorium/view/:code",
     element: <LaboratoriumView />,
     meta: {
       action: 'read',
@@ -152,7 +152,7 @@ const Routes = [
     }
   },
   {
-    path: "/laboratorium/add",
+    path: "/admin/laboratorium/add",
     element: <LaboratoriumCreate />,
     meta: {
       action: 'add',
@@ -160,7 +160,7 @@ const Routes = [
     }
   },
   {
-    path: "/laboratorium/edit/:code",
+    path: "/admin/laboratorium/edit/:code",
     element: <LaboratoriumUpdate />,
     meta: {
       action: 'update',
@@ -168,7 +168,7 @@ const Routes = [
     }
   },
   {
-    path: "/profilelab/edit/:code",
+    path: "/admin/profilelab/edit/:code",
     element: <LaboratoriumUpdate />,
     meta: {
       action: 'update',
@@ -176,7 +176,7 @@ const Routes = [
     }
   },
   {
-    path: "/alat",
+    path: "/admin/alat",
     element: <Alat />,
     meta: {
       action: 'read',
@@ -184,7 +184,7 @@ const Routes = [
     }
   },
   {
-    path: "/alat/add",
+    path: "/admin/alat/add",
     element: <AlatCreate />,
     meta: {
       action: 'add',
@@ -192,7 +192,7 @@ const Routes = [
     }
   },
   {
-    path: "/alat/edit/:code",
+    path: "/admin/alat/edit/:code",
     element: <AlatUpdate />,
     meta: {
       action: 'update',
@@ -200,7 +200,7 @@ const Routes = [
     }
   },
   {
-    path: "/pages",
+    path: "/admin/pages",
     element: <Pages />,
     meta: {
       action: 'read',
@@ -208,7 +208,7 @@ const Routes = [
     }
   },
   {
-    path: "/pages/add",
+    path: "/admin/pages/add",
     element: <PagesCreate />,
     meta: {
       action: 'add',
@@ -216,7 +216,7 @@ const Routes = [
     }
   },
   {
-    path: "/pages/edit/:code",
+    path: "/admin/pages/edit/:code",
     element: <PagesUpdate />,
     meta: {
       action: 'edit',
@@ -224,7 +224,7 @@ const Routes = [
     }
   },
   {
-    path: "/user",
+    path: "/admin/user",
     element: <User />,
     meta: {
       action: 'read',
@@ -232,7 +232,7 @@ const Routes = [
     }
   },
   {
-    path: "/user/add",
+    path: "/admin/user/add",
     element: <UserCreate />,
     meta: {
       action: 'add',
@@ -240,7 +240,7 @@ const Routes = [
     }
   },
   {
-    path: "/user/edit/:code",
+    path: "/admin/user/edit/:code",
     element: <UserUpdate />,
     meta: {
       action: 'update',
