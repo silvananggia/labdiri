@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('status_ketersediaan')->nullable();
             $table->string('lokasi_penyimpanan')->nullable();
             $table->foreign('idalat')->references('idalatelsa')->on('peralatan');
+
             $table->timestamps();
         });
     }

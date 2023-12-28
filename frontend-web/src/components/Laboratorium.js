@@ -137,8 +137,8 @@ console.log(code);
                     <h5>{item.nama}</h5>
                   </div>
                   </Link>
-                  <div className="boxSubTitle">{item.lokasi.nama}</div>
-                  <div className="boxSubTitle">{item.lokasi.keterangan}</div>
+                  <div className="boxSubTitle">{item.lokasi_kawasan}</div>{/* 
+                  <div className="boxSubTitle">{item.lokasi.keterangan}</div> */}
                 </Col>
               ))}
             </Row>

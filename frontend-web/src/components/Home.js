@@ -81,10 +81,10 @@ function Home(props) {
                         <h5>{item.nama}</h5>
                       </div>
                       </Link>
-                      <div className="boxSubTitle">{item.lokasi.nama}</div>
-                      <div className="boxSubTitle">
+                      <div className="boxSubTitle">{item.lokasi_kawasan}</div>
+                     {/*  <div className="boxSubTitle">
                         {item.lokasi.keterangan}
-                      </div>
+                      </div> */}
                     </Col>
                   ))}
               </Row>
@@ -157,12 +157,12 @@ function Home(props) {
                         </div>
                       </Link>
 
-                      <div className="boxSubTitle">
+                     {/*  <div className="boxSubTitle">
                         {item.laboratorium.nama}
                       </div>
                       <div className="boxSubTitle">
                         {item.laboratorium.lokasi.nama}
-                      </div>
+                      </div> */}
                     </Col>
                   ))}
               </Row>

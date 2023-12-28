@@ -18,19 +18,20 @@ class LaboratoriumResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $defaultImageUrl = asset('images/default-laboratorium.jpg');
+        $media = $this->getMedia('laboratorium');
+
         return [
-            'id' => $this->id,
+            'id' => $this->lab_id,
+            'satuan_kerja_id' => $this->satuan_kerja_id,
             'nama' => $this->nama,
-            'tusi' => $this->tusi,
             'deskripsi' => $this->deskripsi,
-            'posisi_strategis' => $this->posisi_strategis,
-            'sdm' => $this->sdm,
+            'lokasi_kawasan' => $this->lokasi_kawasan,
             'status' => $this->status,
             'kategori' =>  new KategoriLabResource($this->kategorilab),
-            'lokasi' =>  new LokasiResource($this->lokasi),
-            'images' => ImagesResource::collection($this->getMedia('laboratorium')),
-
-
+            'images' => $media->isNotEmpty()
+                ? ImagesResource::collection($media)
+             : [['url' => $defaultImageUrl]]
         ];
     }
 }

@@ -11,7 +11,7 @@ class CreateLabTable extends Migration
         Schema::create('lab', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->integer('idlabelsa')->unique();
-            $table->integer('satuan_kerja_id');
+            $table->integer('satuan_kerja_id')->unique();
             $table->string('lokasi_kawasan');
             $table->string('nama');
             $table->text('deskripsi');

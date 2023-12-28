@@ -16,32 +16,21 @@ class AlatResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $defaultImageUrl = asset('images/default-alat.jpg');
+        $media = $this->getMedia('alat');
+
         return [
-            'id' => $this->id,
-            'nama' => $this->nama,
+            'id' => $this->alat_id,
+            'nama' => $this->nama_barang,
             'merk' => $this->merk,
             'spesifikasi' => $this->spesifikasi,
             'fungsi' => $this->fungsi,
             'deskripsi' => $this->deskripsi,
-            'jumlah' => $this->jumlah,
-            'dimensi' => $this->dimensi,
-            'kondisi' => $this->kondisi,
-            'kode_bmn' => $this->kode_bmn,
-            'tahun_perolehan' => $this->tahun_perolehan,
-            'harga_perolehan' => $this->harga_perolehan,
-            'keterangan' => $this->keterangan,
-            'penanggungjawab' => $this->penanggungjawab,
-            'status_kalibrasi' => $this->status_kalibrasi,
-            'tahun_kalibrasi' => $this->tahun_kalibrasi,
-            'link_elsa' => $this->link_elsa,
-            'noseri' => $this->noseri,
-            'sumber_tenaga' => $this->sumber_tenaga,
-            'status_ketersediaan' => $this->status_ketersediaan,
-            'lokasi_penyimpanan' => $this->lokasi_penyimpanan,
-            'laboratorium' =>  new LaboratoriumResource($this->laboratorium),
-            'images' => ImagesResource::collection($this->getMedia('alat')),
 
-
+            'laboratorium' =>  new LaboratoriumResource($this->satuan_kerja_id),
+            'images' => $media->isNotEmpty()
+                ? ImagesResource::collection($media)
+             : [['url' => $defaultImageUrl]]
 
         ];
     }

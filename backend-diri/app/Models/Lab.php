@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\Uuids;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\HasMedia;
 
-class Lab extends Model
+class Lab extends Model implements HasMedia
 {
+    use HasFactory,Uuids, InteractsWithMedia;
     protected $table = 'lab';
     protected $primaryKey = 'id';
     public $incrementing = false;
@@ -26,14 +32,7 @@ class Lab extends Model
         'telepon',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
 
-        static::creating(function ($model) {
-            $model->id = Str::uuid();
-        });
-    }
 
     public function labDetail()
      {

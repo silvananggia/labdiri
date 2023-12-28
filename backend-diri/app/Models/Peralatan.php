@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Traits\Uuids;
-class Peralatan extends Model
+
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\HasMedia;
+class Peralatan extends Model implements HasMedia
 {
-    use  HasFactory, Uuids;
+    use HasFactory, Uuids, InteractsWithMedia;
 
     protected $table = 'peralatan';
     protected $primaryKey = 'id';
@@ -29,5 +33,9 @@ class Peralatan extends Model
         'usernameintra_manajer_alat',
     ];
 
+    public function laboratorium(): BelongsTo
+    {
+        return $this->belongsTo(lab::class, 'satuan_kerja_id','satuan_kerja_id');
+    }
 
 }

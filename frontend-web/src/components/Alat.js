@@ -160,10 +160,10 @@ function Alat(props) {
                       <h5>{item.nama}</h5>
                     </div>
                   </Link>
-                  <div className="boxSubTitle">{item.laboratorium.nama}</div>
+                 {/*  <div className="boxSubTitle">{item.laboratorium.nama}</div>
                   <div className="boxSubTitle">
                     {item.laboratorium.lokasi.nama}
-                  </div>
+                  </div> */}
                 </Col>
               ))}
             </Row>

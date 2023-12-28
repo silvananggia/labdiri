@@ -21,6 +21,7 @@ class PeralatanDetail extends Model implements HasMedia
 
     protected $fillable = ['idalat','spesifikasi','fungsi','deskripsi','dimensi','harga_perolehan','keterangan','status_kalibrasi','tahun_kalibrasi','link_elsa','noseri','sumber_tenaga','status_ketersediaan','lokasi_penyimpanan'];
 
+
     public function peralatan(): HasOne
     {
         return $this->hasOne(lab::class, 'idalatelsa','idalat');

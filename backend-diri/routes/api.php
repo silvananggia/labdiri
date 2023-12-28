@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ApiAuthController;
-use App\Http\Controllers\LabController;
-use App\Http\Controllers\PeralatanController;
+use App\Http\Controllers\API\LabController;
+use App\Http\Controllers\API\PeralatanController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\API\PagesController;
 use App\Http\Controllers\API\RegisterController;
@@ -42,6 +42,15 @@ use App\Http\Controllers\ApiController;
 
 Route::post('/login', [ApiAuthController::class, 'login']);
 
+ Route::get('getkategorilab/{id}', [KategoriLabController::class, 'show']);
+//Route::get('getlokasi', [LokasiController::class, 'index']);
+Route::get('getlab', [LabController::class, 'index']);
+Route::get('getlab/{id}', [LabController::class, 'getLabById']);
+Route::get('getlaboratorium/{id}', [LabController::class, 'showbykategori']);
+Route::get('getalat', [PeralatanController::class, 'getAllPeralatan']);
+Route::get('getallalat/{idlab}', [PeralatanController::class, 'showbylab']);
+Route::get('getalat/{id}', [PeralatanController::class, 'getPeralatanById']);
+Route::get('getpage/{slug}', [PagesController::class, 'show']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/fetch-laboratorium-data', [ApiController::class, 'FetchLaboratoriumData']);
@@ -53,11 +62,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/lab/{id}',  [LabController::class,'getLabById']);
     Route::get('/peralatan', [PeralatanController::class, 'getAllPeralatan']);
     Route::get('/peralatan/{id}',  [PeralatanController::class,'getPeralatanById']);
-
-
-    Route::get('/equipments', [EquipmentController::class, 'getAllEquipment']);
-    Route::get('/equipments/{id}',  [EquipmentController::class,'getEquipmentById']);
-    Route::get('/equipments/satker/{id}', [EquipmentController::class,'getEquipmentBySatuanKerjaId']);
 
 
     Route::resource('roles', RolesController::class);
