@@ -31,7 +31,7 @@ const Router = () => {
     if (user) {
       return getHomeRouteForLoggedInUser(user.role)
     } else {
-      return '/login'
+      return '/admin/login'
     }
   }
 
@@ -42,9 +42,9 @@ const Router = () => {
       element: <Navigate replace to={getHomeRoute()} />
     },
     {
-      path: '/login',
+      path: '/admin/login',
       element: <BlankLayout />,
-      children: [{ path: '/login', element: <Login /> }]
+      children: [{ path: '/admin/login', element: <Login /> }]
     },
   
     {

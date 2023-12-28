@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('lab_detail', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('idkategori')->unsigned();
+            $table->uuid('idkategori')->nullable()->unsigned();
             $table->integer('idlab')->unique();
-            $table->longText('tusi');
+            $table->longText('tusi')->nullable();
             $table->longText('posisi_strategis')->nullable();
             $table->longText('sdm')->nullable();
             $table->string('status');

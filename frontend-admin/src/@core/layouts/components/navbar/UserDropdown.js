@@ -92,7 +92,7 @@ const UserDropdown = () => {
           <Settings size={14} className="me-75" />
           <span className="align-middle">Settings</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to="/login" onClick={logOut}>
+        <DropdownItem tag={Link} to="/admin/login" onClick={logOut}>
           <Power size={14} className="me-75" />
           <span className="align-middle">Logout</span>
         </DropdownItem>

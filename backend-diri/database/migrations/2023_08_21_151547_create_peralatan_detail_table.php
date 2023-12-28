@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('peralatan_detail', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->integer('idalat');
-            $table->longText('spesifikasi');
-            $table->longText('fungsi');
-            $table->longText('deskripsi');
+            $table->longText('spesifikasi')->nullable();
+            $table->longText('fungsi')->nullable();
+            $table->longText('deskripsi')->nullable();
             $table->string('dimensi')->nullable();
             $table->double('harga_perolehan')->nullable();
             $table->longText('keterangan')->nullable();

@@ -11,6 +11,7 @@ export default () => {
     define: {
       global: 'globalThis'
     },
+    base:'/admin/',
     server: {
       port: 3000,
       proxy: 'https://pixinvent.com/',
