@@ -70,7 +70,7 @@ export const getHomeRouteForLoggedInUser = (userRole) => {
   if (userRole === "koordinator") return "/home/koordinator";
   if (userRole === "manajer") return "/home-manajer";
   if (userRole === "public") return "/home-public";
-  return "/login";
+  return "/home/login";
 };
 
 // ** React Select Theme Colors
