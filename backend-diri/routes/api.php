@@ -42,6 +42,7 @@ use App\Http\Controllers\ApiController;
 
 Route::post('/login', [ApiAuthController::class, 'login']);
 
+Route::get('getkategorilab', [KategoriLabController::class, 'index']);
  Route::get('getkategorilab/{id}', [KategoriLabController::class, 'show']);
 //Route::get('getlokasi', [LokasiController::class, 'index']);
 Route::get('getlab', [LabController::class, 'index']);

@@ -8,6 +8,23 @@ $primary:#ea5455;
 @import '~bootstrap/scss/bootstrap';
 body{
   font: "Inter", Helvetica, Arial, serif;
+  display: flex;
+  flex-direction: column;
+
+
+}
+a {
+  text-decoration: none;
+}
+.layout-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper {
+  flex: 1;
+  min-height: 50vh;
 }
 a {
   text-decoration: none;

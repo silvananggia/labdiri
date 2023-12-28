@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { connect, useSelector,useDispatch } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import {
   Row,
   Col,
@@ -11,11 +11,11 @@ import {
   Breadcrumb,
   BreadcrumbItem,
 } from "reactstrap";
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css'
 
 import { getAllAlat, getAlatID } from "../actions/alat";
-import {
-  getLaboratoriumID,
-} from "../actions/laboratorium";
+import { getLaboratoriumID } from "../actions/laboratorium";
 
 function Alat(props) {
   const dispatch = useDispatch();
@@ -29,18 +29,22 @@ function Alat(props) {
 
   useEffect(() => {
     props.loadalat(idlab);
-    
   }, []);
-  
+
+  const isLoading = props.alat.loading; // Assuming you have a loading state in your Redux store
+
+  useEffect(() => {
+    props.loadalat(idlab);
+  }, [idlab]);
+
   const laboratoriumobj = useSelector(
     (state) => state.laboratorium.laboratoriumobj
   );
   useEffect(() => {
-    if(idlab !== "all"){
-
+    if (idlab !== "all") {
       dispatch(getLaboratoriumID(idlab));
     }
-  }, [ ]);
+  }, []);
 
   useEffect(() => {
     if (laboratoriumobj) {
@@ -48,7 +52,6 @@ function Alat(props) {
     }
   }, [laboratoriumobj]);
 
-  
   useEffect(() => {
     // Calculate the filtered data count
     setFilteredDataCount(
@@ -98,6 +101,41 @@ function Alat(props) {
     }
   };
 
+  const renderPageButtons = () => {
+    const buttons = [];
+    const maxButtonsToShow = 5; // Adjust as needed
+
+    for (let i = 1; i <= totalPages; i++) {
+      // Show first, last, and nearby pages
+      const showButton =
+        i === 1 ||
+        i === totalPages ||
+        Math.abs(i - currentPage) <= Math.floor(maxButtonsToShow / 2);
+
+      if (showButton) {
+        buttons.push(
+          <Button
+            key={i}
+            onClick={() => handlePageChange(i)}
+            color={currentPage === i ? "primary" : "secondary"}
+          >
+            {i}
+          </Button>
+        );
+      }
+    }
+
+    // Add ellipses if there are more pages to be hidden
+    if (currentPage - Math.floor(maxButtonsToShow / 2) > 2) {
+      buttons.splice(1, 0, <span key="ellipsis-start">...</span>);
+    }
+    if (currentPage + Math.floor(maxButtonsToShow / 2) < totalPages - 1) {
+      buttons.splice(buttons.length - 1, 0, <span key="ellipsis-end">...</span>);
+    }
+
+    return buttons;
+  };
+
   return (
     <Fragment>
       <div className="breadcrumb">
@@ -106,8 +144,9 @@ function Alat(props) {
             <BreadcrumbItem>
               <a href="/">Beranda</a>
             </BreadcrumbItem>
-            <BreadcrumbItem active>{namaLab ? 
-            "Alat " + namaLab : "Alat Laboratorium"}</BreadcrumbItem>
+            <BreadcrumbItem active>
+              {namaLab ? "Alat " + namaLab : "Alat Laboratorium"}
+            </BreadcrumbItem>
           </Breadcrumb>
         </div>
       </div>
@@ -115,8 +154,7 @@ function Alat(props) {
         <div className="container">
           <div>
             <h2 className="titleLeft">
-            {namaLab ? "Alat " + namaLab : "Alat Laboratorium"}
-              
+              {namaLab ? "Alat " + namaLab : "Alat Laboratorium"}
             </h2>
           </div>
           <div>
@@ -146,26 +184,41 @@ function Alat(props) {
           )}
           <div className="wrapper">
             <Row className="boxItem">
-              {paginatedData.map((item, index) => (
-                <Col key={item.id}>
-                  <Link
-                    className="ms-2"
-                    color="primary"
-                    to={`/alat-lab/${item.id}`}
-                  >
+            {isLoading ? (
+                // Skeleton loading while data is being fetched
+                Array.from({ length: 8 }).map((_, index) => (
+                  <Col key={index}>
                     <div className="boxAlat box">
-                      <img src={item.images[0].url} alt={item.nama} />
+                      <Skeleton height={150} />
                     </div>
                     <div className="boxTitle">
-                      <h5>{item.nama}</h5>
+                      <Skeleton width={250} />
                     </div>
-                  </Link>
-                 {/*  <div className="boxSubTitle">{item.laboratorium.nama}</div>
+                  </Col>
+                ))
+              ) : (
+                // Render actual data
+                paginatedData.map((item, index) => (
+                  <Col key={item.id}>
+                    <Link
+                      className="ms-2"
+                      color="primary"
+                      to={`/alat-lab/${item.id}`}
+                    >
+                      <div className="boxAlat box">
+                        <img src={item.images[0].url} alt={item.nama} />
+                      </div>
+                      <div className="boxTitle">
+                        <h5>{item.nama}</h5>
+                      </div>
+                    </Link>
+                    {/*  <div className="boxSubTitle">{item.laboratorium.nama}</div>
                   <div className="boxSubTitle">
                     {item.laboratorium.lokasi.nama}
                   </div> */}
-                </Col>
-              ))}
+                  </Col>
+                ))
+              )}
             </Row>
           </div>
           <div className="pagination">
@@ -176,15 +229,7 @@ function Alat(props) {
             >
               {"<"}
             </Button>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <Button
-                key={index}
-                onClick={() => handlePageChange(index + 1)}
-                color={currentPage === index + 1 ? "primary" : "secondary"}
-              >
-                {index + 1}
-              </Button>
-            ))}
+            {renderPageButtons()}
             <Button
               onClick={goToNextPage}
               color="secondary"

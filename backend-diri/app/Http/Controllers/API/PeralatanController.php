@@ -22,7 +22,8 @@ class PeralatanController extends BaseController
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
             $peralatans = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
-                ->select('peralatan.idalatelsa AS alat_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan')
+            ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+            ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan','lab.nama AS nama_lab', 'lab.lokasi_kawasan')
                 ->get();
 
             // Loop through the labs and add data to lab_detail if it doesn't exist
@@ -53,7 +54,8 @@ class PeralatanController extends BaseController
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
             $peralatans = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
-                ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id','peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan')
+            ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+            ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan','lab.nama AS nama_lab', 'lab.lokasi_kawasan')
                 ->firstWhere('peralatan.idalatelsa', $id);
 
             // Loop through the labs and add data to lab_detail if it does
@@ -68,10 +70,14 @@ class PeralatanController extends BaseController
     {
         if ($idlab === "all") {
             $alat = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
-            ->select('peralatan.idalatelsa AS alat_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan')
-            ->get();
+                ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+                ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan','lab.nama AS nama_lab', 'lab.lokasi_kawasan')
+                ->get();
         } else {
-            $alat = Peralatan::with('laboratorium')->where('idlab', $idlab)->get();
+            $alat = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
+            ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+            ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan','lab.nama AS nama_lab', 'lab.lokasi_kawasan')
+            ->where('peralatan.satuan_kerja_id', $idlab)->get();
         }
 
         return $this->sendResponse(AlatResource::collection($alat), 'Data retrieved successfully.');

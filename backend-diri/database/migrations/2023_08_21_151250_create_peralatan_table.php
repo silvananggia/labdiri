@@ -21,7 +21,6 @@ class CreatePeralatanTable extends Migration
             $table->integer('trx_referensi_laboratorium_id')->nullable();
             $table->string('usernameintra_manajer_alat')->nullable();
             $table->string('checksum')->nullable(); //
-            $table->foreign('satuan_kerja_id')->references('satuan_kerja_id')->on('lab')->nullable();
             $table->timestamps();
         });
     }

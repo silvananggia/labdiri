@@ -48,7 +48,7 @@ class LabController extends BaseController
         }
     }
 
-    public function getLabById($id)
+    public function getLabById($id) : JsonResponse
     {
         try {
             // Make a GET request to the API endpoint
@@ -56,11 +56,13 @@ class LabController extends BaseController
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
             $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
                 ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
-                ->firstWhere('lab.idlabelsa', $id);
+                ->where('lab.idlabelsa', $id)
+                ->get();
 
             // Loop through the labs and add data to lab_detail if it does
 
-            return response()->json(['success' => true, 'data' => $labs]);
+            return $this->sendResponse(LaboratoriumResource::collection($labs), 'Data retrieved successfully.');
+
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }

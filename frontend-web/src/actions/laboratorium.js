@@ -25,7 +25,7 @@ import {
   export const getLaboratoriumID = (id) => async (dispatch) => {
     try {
       const res = await LaboratoriumService.getLaboratorium(id);
-  console.log(res.data);
+
       dispatch({
         type: GET_LABORATORIUM_ID,
         payload: res.data,
