@@ -41,7 +41,7 @@ const UserDropdown = () => {
   }, [dispatch]);
 
   const user = useSelector((state) => state.auth.user);
-  console.log(user);
+
   const logOut = useCallback(() => {}, [dispatch]);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const UserDropdown = () => {
         className="nav-link dropdown-user-link"
         onClick={(e) => e.preventDefault()}
       >
-        {user ? (
+        {user && user.pegawaiData ? (
           <>
             <div className="user-nav d-sm-flex d-none">
               <span className="user-name fw-bold">{user.pegawaiData.name}</span>
@@ -71,9 +71,9 @@ const UserDropdown = () => {
               </span>
             </div>
 
-            <Avatar color="light-danger" img={user.pegawaiData.foto} />
+            {/* <Avatar color="light-danger" img={user.pegawaiData.foto} /> */}
 
-            {/*  <Avatar color="light-danger" content={user.pegawaiData.email_address} initials />  */}
+          <Avatar color="light-danger" content={user.pegawaiData.name} initials /> 
           </>
         ) : null}
       </DropdownToggle>
@@ -92,7 +92,7 @@ const UserDropdown = () => {
           <Settings size={14} className="me-75" />
           <span className="align-middle">Settings</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to="/admin/login" onClick={logOut}>
+        <DropdownItem tag={Link} to="/admin/logout" onClick={logOut}>
           <Power size={14} className="me-75" />
           <span className="align-middle">Logout</span>
         </DropdownItem>

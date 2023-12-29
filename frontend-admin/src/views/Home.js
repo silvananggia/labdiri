@@ -51,7 +51,7 @@ const Dashboard = (props) => {
     setTotalLaboratorium(listLaboratorium.length);
     setTotalLokasi(listLokasi.length);
 
-  }, [listLokasi, listLaboratorium]);
+  }, []);
   
   
 

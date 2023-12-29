@@ -22,7 +22,18 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Passport::ignoreRoutes();
+        // Mandatory to define Scope
+        Passport::tokensCan([
+            'admin' => 'Admin Scope',
+            'koordinator' => 'koordinator Scope',
+            'manajer' => 'manajer Scope',
+            'manajer_alat' => 'manajer_alat Scope',
+            'public' => 'public Scope'
+        ]);
 
+        Passport::setDefaultScope([
+            'public'
+        ]);
 
     }
 }

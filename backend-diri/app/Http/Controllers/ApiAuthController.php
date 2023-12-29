@@ -55,11 +55,11 @@ class ApiAuthController extends BaseController
                 $userRole = $user->role()->first();
 
                 if ($userRole) {
-                    $this->scope = $userRole->role;
+                    $this->scope = $userRole->name;
                 }
 
                 // Create a token for the authenticated user
-                $token = $user->createToken($userData['userData']['username'] . '-' . now());
+                $token = $user->createToken($userData['userData']['username'] . '-' . now(), [$this->scope]);
 
                 // Building a success response with user information and token
                 $success['accessToken'] = $token->accessToken;

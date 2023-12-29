@@ -36,11 +36,13 @@ const MySwal = withReactContent(Swal)
 
 const Alat = (props) => {
   const ability = useContext(AbilityContext);
-  const { user: currentUser } = useSelector((state) => state.auth.user);
-
+  //const user  = useSelector((state) => state.auth.user);
+  const user = JSON.parse(localStorage.getItem("user"));
+console.log(user.role);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilter, setGlobalFilter] = useState(""); // State for global search
   const [currentPage, setCurrentPage] = useState(0);
+
 
   const handleDelete = (code) => {
     return MySwal.fire({
@@ -60,10 +62,10 @@ const Alat = (props) => {
       if (result.value) {
         props.removeAlat(code);
 
-        if (currentUser && currentUser.role === "admin") {
+        if (user && user.role === "admin") {
           props.loadAlat();
         } else {
-          props.loadAlatLab(currentUser.laboratorium);
+          props.loadAlatLab(user.laboratorium);
         }
 
         MySwal.fire({
@@ -88,10 +90,10 @@ const Alat = (props) => {
   };
 
   useEffect(() => {
-    if (currentUser && currentUser.role == "admin") {
+    if (user && user.role == "admin") {
       props.loadAlat();
     } else {
-      props.loadAlatLab(currentUser.laboratorium);
+      props.loadAlatLab(user.laboratorium);
     }
   }, []);
 
@@ -107,40 +109,8 @@ const Alat = (props) => {
       sortable: true,
     },
     {
-      name: "Jumlah",
-      selector: (row) => row.jumlah,
-    },
-    {
-      name: "Kondisi",
-
-      cell: (row) => (
-        <Badge
-          pill
-          color={
-            row.kondisi === "0"
-              ? "light-success"
-              : row.kondisi === "1"
-              ? "light-warning"
-              : row.kondisi === "2"
-              ? "light-danger"
-              : "light-secondary" // Default color for unknown values
-          }
-          className="me-1"
-        >
-          {row.kondisi === "0"
-            ? "Baik"
-            : row.kondisi === "1"
-            ? "Rusak Ringan"
-            : row.kondisi === "2"
-            ? "Rusak Berat"
-            : "Unknown"}{" "}
-        </Badge>
-      ),
-      sortable: true,
-    },
-    {
       name: "Lokasi",
-      selector: (row) => row.laboratorium.nama,
+      selector: (row) => row.laboratorium,
       sortable: true,
     },
     {
@@ -185,7 +155,7 @@ const Alat = (props) => {
       item.nama.toLowerCase().includes(globalFilter.toLowerCase()) ||
       item.merk.toLowerCase().includes(globalFilter.toLowerCase()) ||
       item.jumlah.toString().includes(globalFilter) ||
-      item.laboratorium.nama.toLowerCase().includes(globalFilter.toLowerCase())
+      item.laboratorium.toLowerCase().includes(globalFilter.toLowerCase())
   );
 
   const pageCount = Math.ceil(filteredData.length / rowsPerPage);

@@ -6,11 +6,11 @@ const getLab = () => {
 };
 
 const getLaboratoriumAll = () => {
-  return axios.get("/laboratorium", { headers: authHeader() });
+  return axios.get("/lab", { headers: authHeader() });
 };
 
 const getLaboratorium = (id) => {
-  return axios.get(`/laboratorium/${id}`, { headers: authHeader() });
+  return axios.get(`/lab/${id}`, { headers: authHeader() });
 };
 
 const createLaboratorium = (data) => {

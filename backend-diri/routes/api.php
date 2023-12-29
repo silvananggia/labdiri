@@ -53,7 +53,7 @@ Route::get('getallalat/{idlab}', [PeralatanController::class, 'showbylab']);
 Route::get('getalat/{id}', [PeralatanController::class, 'getPeralatanById']);
 Route::get('getpage/{slug}', [PagesController::class, 'show']);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api','role','scope:admin'])->group( function () {
     Route::post('/fetch-laboratorium-data', [ApiController::class, 'FetchLaboratoriumData']);
     Route::post('/fetch-peralatan-data', [ApiController::class, 'FetchPeralatanData']);
 

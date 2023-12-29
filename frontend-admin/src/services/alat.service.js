@@ -2,7 +2,7 @@ import axios from "../api/axios";
 import authHeader from "./auth-header";
 
 const getAlatAll = () => {
-  return axios.get("/alat", { headers: authHeader() });
+  return axios.get("/peralatan", { headers: authHeader() });
 };
 
 const getAlatLab = (id) => {
@@ -11,7 +11,7 @@ const getAlatLab = (id) => {
 
 
 const getAlat = (id) => {
-  return axios.get(`/alat/${id}`, { headers: authHeader() });
+  return axios.get(`/peralatan/${id}`, { headers: authHeader() });
 };
 
 const createAlat = (data) => {

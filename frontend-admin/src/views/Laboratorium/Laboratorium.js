@@ -53,13 +53,8 @@ const Laboratorium = (props) => {
       sortable: true,
     },
     {
-      name: "Kategori",
-      selector: (row) => row.kategori.nama,
-      sortable: true,
-    },
-    {
       name: "Lokasi",
-      selector: (row) => row.lokasi.nama,
+      selector: (row) => row.lokasi_kawasan,
       sortable: true,
     },
     {
