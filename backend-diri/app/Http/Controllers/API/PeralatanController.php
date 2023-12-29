@@ -17,30 +17,38 @@ use App\Http\Resources\AlatDetailResource;
 
 class PeralatanController extends BaseController
 {
-    public function getAllPeralatan()
+    public function getAllPeralatan(): JsonResponse
     {
         try {
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
             $peralatans = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
-                ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
-                ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan')
-                ->get();
-
+            ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+            ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan')
+            ->limit(5)
+            ->get();
+/*
             // Loop through the labs and add data to lab_detail if it doesn't exist
             foreach ($peralatans as $peralatan) {
-                if ($peralatan->status === null) {
+                // Check if lab_detail doesn't exist for the current equipment
+                if ($peralatan->status_ketersediaan === null) {
                     // If lab_detail doesn't exist, add data to lab_detail
                     $newLabDetail = new PeralatanDetail([
-
-                        'idalat' => $peralatan->alat_id, // Assuming 'idlab' is the foreign key in lab_detail
-                        'status' => 'non-aktif',
+                        'idalat' => $peralatan->alat_id, // Assuming 'idalat' is the foreign key in peralatan_detail
+                        'status_ketersediaan' => 'non-aktif', // Adjusted field name based on the select statement
+                        // Add other fields if needed
                     ]);
 
-                    $newLabDetail->save();
-                }
-            }
+                    // Check if the checksum exists before saving
+                    $existingChecksum = PeralatanDetail::where('idalat', $peralatan->alat_id)->pluck('checksum')->first();
 
+                    if (!$existingChecksum) {
+                        // If checksum doesn't exist, generate and add it
+                        $newLabDetail->checksum = md5(serialize($newLabDetail->toArray())); // Example checksum calculation, adjust based on your needs
+                        $newLabDetail->save();
+                    }
+                }
+            } */
             return $this->sendResponse(AlatResource::collection($peralatans), 'Data retrieved successfully.');
 
         } catch (\Exception $e) {

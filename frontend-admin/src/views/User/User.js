@@ -46,10 +46,10 @@ const User = (props) => {
   const columns = [
     {
       name: "User",
-      selector: (row) => row.name,
+      selector: (row) => row.username_intra,
       sortable: true,
     },
-    {
+   /*  {
       name: "Roles",
       selector: (row) => row.roles?.role || "Belum Memiliki Roles",
       sortable: true,
@@ -66,7 +66,7 @@ const User = (props) => {
       name: "Laboratorium",
       selector: (row) => row.roles?.laboratorium?.nama || "Tidak Berada Pada Lab",
       sortable: true,
-    },
+    }, */
     
     {
       name: "Aksi",
