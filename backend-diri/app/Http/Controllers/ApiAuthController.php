@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ApiAuthController extends BaseController
 {
+    protected $scope;
     public function login(Request $request)
     {
         $request->validate([
