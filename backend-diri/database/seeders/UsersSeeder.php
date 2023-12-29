@@ -19,7 +19,7 @@ class UsersSeeder extends Seeder
         $this->command->info("User 'silv007' created.");
 
         // Attach the 'administrator' role to the user 'silv007'
-        $adminRole = Roles::where('name', 'administrator')->first();
+        $adminRole = Roles::where('name', 'admin')->first();
 
         if ($adminRole) {
             $userSilv007->update(['role_id' => $adminRole->id]);
