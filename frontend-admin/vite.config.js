@@ -14,12 +14,11 @@ export default () => {
     base:'/admin/',
    server: {
       port: 9000,
-      /* proxy: 'http://localhost',
       cors: {
-        origin: ['http://localhost:3000'],
+        origin: ['http://localhost'],
         methods: ['GET', 'PATCH', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-      } */
+      }
     }, 
     css: {
       preprocessorOptions: {
