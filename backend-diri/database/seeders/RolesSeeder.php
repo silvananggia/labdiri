@@ -10,11 +10,18 @@ class RolesSeeder extends Seeder
     public function run()
     {
         // Add the roles
-        $roles = ['administrator', 'manajer', 'koordinator', 'manajer_alat', 'public'];
+        $roles = ['admin', 'manajer', 'koordinator', 'manajer_alat', 'public'];
 
         foreach ($roles as $roleName) {
-            Roles::create(['name' => $roleName]);
-            $this->command->info("Role '{$roleName}' created.");
+            // Check if the role already exists
+            $existingRole = Roles::where('name', $roleName)->first();
+
+            if (!$existingRole) {
+                Roles::create(['name' => $roleName]);
+                $this->command->info("Role '{$roleName}' created.");
+            } else {
+                $this->command->info("Role '{$roleName}' already exists. Skipping.");
+            }
         }
     }
 }

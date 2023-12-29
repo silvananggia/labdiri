@@ -7,7 +7,7 @@ export default [
     action: 'read',
     resource: 'home',
     icon: <Home size={20} />,
-    navLink: "/home",
+    navLink: "/admin/home",
   },
   {
     id: "alat",
@@ -15,7 +15,7 @@ export default [
     resource: 'alat',
     title: "Alat Lab",
     icon: <Tool size={20} />,
-    navLink: "/alat",
+    navLink: "/admin/alat",
   },
 /*   {
     id: "logbookAlat",
@@ -42,7 +42,7 @@ export default [
     action: 'read',
     resource: 'user',
     icon: <Users size={12}/>,
-    navLink: "/user",
+    navLink: "/admin/user",
   },
   {
     id: "profilelab",
@@ -50,7 +50,7 @@ export default [
     action: 'read',
     resource: 'profilelab',
     icon: <FileText size={12}/>,
-    navLink: "/profilelab",
+    navLink: "/admin/profilelab",
   },
   {
     id: 'setting',
@@ -65,7 +65,7 @@ export default [
         action: 'read',
         resource: 'kategori',
         icon: <Circle size={12}/>,
-        navLink: "/kategori-lab",
+        navLink: "/admin/kategori-lab",
       },
       {
         id: "lokasi",
@@ -73,7 +73,7 @@ export default [
         action: 'read',
         resource: 'lokasi',
         icon: <Circle size={12}/>,
-        navLink: "/lokasi",
+        navLink: "/admin/lokasi",
       },
       {
         id: "laboratorium",
@@ -81,7 +81,7 @@ export default [
         action: 'read',
         resource: 'laboratorium',
         icon: <Circle size={12}/>,
-        navLink: "/laboratorium",
+        navLink: "/admin/laboratorium",
       },
       {
         id: "pages",
@@ -89,7 +89,7 @@ export default [
         action: 'read',
         resource: 'pages',
         icon: <Circle size={12}/>,
-        navLink: "/pages",
+        navLink: "/admin/pages",
       },
      
 

@@ -12,15 +12,15 @@ export default () => {
       global: 'globalThis'
     },
     base:'/admin/',
-    server: {
-      port: 3000,
-      proxy: 'https://pixinvent.com/',
+   server: {
+      port: 9000,
+      /* proxy: 'http://localhost',
       cors: {
-        origin: ['https://pixinvent.com/', 'http://localhost:3000'],
+        origin: ['http://localhost:3000'],
         methods: ['GET', 'PATCH', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-      }
-    },
+      } */
+    }, 
     css: {
       preprocessorOptions: {
         scss: {

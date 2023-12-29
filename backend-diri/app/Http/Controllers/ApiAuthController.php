@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
+use App\Models\Roles;
 use Illuminate\Support\Facades\Auth;
 
 class ApiAuthController extends BaseController
@@ -46,12 +47,16 @@ class ApiAuthController extends BaseController
                     ['userintra' => $userData['userData']['username']], // Use a field that uniquely identifies the user
                     [
                         'name' => $userData['pegawaiData']['name'],
-                        // ... other user attributes
                     ]
                 );
 
                 // Log in the local user
                 Auth::login($user);
+                $userRole = $user->role()->first();
+
+                if ($userRole) {
+                    $this->scope = $userRole->role;
+                }
 
                 // Create a token for the authenticated user
                 $token = $user->createToken($userData['userData']['username'] . '-' . now());
@@ -59,7 +64,7 @@ class ApiAuthController extends BaseController
                 // Building a success response with user information and token
                 $success['accessToken'] = $token->accessToken;
                 $success['ssoToken'] = $accessToken;
-                $success['role'] = 'admin';
+                $success['role'] =$userRole['name'];
                 $success['username'] = $userData['userData']['username'];
                 $success['name'] = $userData['pegawaiData']['name'];
 

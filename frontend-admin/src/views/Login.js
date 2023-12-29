@@ -142,7 +142,7 @@ const Login = () => {
   };
 
   if (isAuthenticated) {
-    navigate("/home");
+    navigate("/admin/home");
   }
 
   return (

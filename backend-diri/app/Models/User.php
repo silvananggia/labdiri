@@ -2,20 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Traits\Uuids;
+use App\Models\Roles;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, Uuids;
-
 
     /**
      * The attributes that are mass assignable.
@@ -28,11 +25,8 @@ class User extends Authenticatable
         'role_id'
     ];
 
-
-
-
     public function role()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Roles::class, 'role_id', 'id');
     }
 }
