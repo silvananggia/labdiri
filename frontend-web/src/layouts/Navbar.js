@@ -13,24 +13,25 @@ import {
   DropdownItem,
 } from 'reactstrap';
 
+import logo from '../assets/images/logo/logo.png';
 
-import logo from '../assets/images/logo/logo.png'; 
-function Menu(args){
+function Menu() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
 
-    return (
-
-      <div>
-        <Navbar color="light" light expand="md">
-        <NavbarBrand href="/"> <img
+  return (
+    <div>
+      <Navbar color="light" light expand="md">
+        <NavbarBrand href="/">
+          <img
             src={logo}
-            alt="Logo"
+            alt="Lab Logo"
             width="103"
             height="40"
             className="d-inline-block align-top"
-          /></NavbarBrand>
+          />
+        </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ms-auto" navbar>
@@ -42,47 +43,34 @@ function Menu(args){
                 Profil
               </DropdownToggle>
               <DropdownMenu right>
-              <DropdownItem><NavLink href="/tentang-kami">
-              Tentang Kami
-              </NavLink></DropdownItem>
-                <DropdownItem><NavLink href="/visi-misi">
-              Visi & Misi
-              </NavLink></DropdownItem>
-              <DropdownItem><NavLink href="/struktur-organisasi">
-             Struktur Organisasi
-              </NavLink></DropdownItem>
-
+                <DropdownItem>
+                  <NavLink href="/tentang-kami">Tentang Kami</NavLink>
+                </DropdownItem>
+                <DropdownItem>
+                  <NavLink href="/visi-misi">Visi & Misi</NavLink>
+                </DropdownItem>
+                <DropdownItem>
+                  <NavLink href="/struktur-organisasi">Struktur Organisasi</NavLink>
+                </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
             <NavItem>
-              <NavLink href="/laboratorium">
-              Laboratorium
-              </NavLink>
+              <NavLink href="/laboratorium">Laboratorium</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/alat-lab">
-              Alat Laboratorium
-              </NavLink>
+              <NavLink href="/alat-lab">Alat Laboratorium</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/layanan">
-              Layanan
-              </NavLink>
+              <NavLink href="/layanan">Layanan</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/hubungi-kami">
-              Hubungi Kami
-              </NavLink>
+              <NavLink href="/hubungi-kami">Hubungi Kami</NavLink>
             </NavItem>
-            
           </Nav>
-        
         </Collapse>
       </Navbar>
-      </div>
-  
+    </div>
   );
-
-};
+}
 
 export default Menu;

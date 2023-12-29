@@ -58,10 +58,10 @@ function Alat(props) {
       props.alat.alatlist.filter(
         (item) =>
           item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.laboratorium.nama
+          item.laboratorium
             .toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
-          item.laboratorium.lokasi.nama
+          item.laboratorium.lokasi_kawasan
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
       ).length
@@ -206,16 +206,16 @@ function Alat(props) {
                       to={`/alat-lab/${item.id}`}
                     >
                       <div className="boxAlat box">
-                        <img src={item.images[0].url} alt={item.nama} />
-                      </div>
-                      <div className="boxTitle">
-                        <h5>{item.nama}</h5>
-                      </div>
-                    </Link>
-                    {/*  <div className="boxSubTitle">{item.laboratorium.nama}</div>
+                      <img src={item.images[0]?.url || ""} alt={item.nama || ""} />
+                    </div>
+                    <div className="boxTitle">
+                      <h5>{item.nama || ""}</h5>
+                    </div>
+                  </Link>
+                  <div className="boxSubTitle">{item.laboratorium || ""}</div>
                   <div className="boxSubTitle">
-                    {item.laboratorium.lokasi.nama}
-                  </div> */}
+                    {item.lokasi_kawasan || ""}
+                  </div>
                   </Col>
                 ))
               )}

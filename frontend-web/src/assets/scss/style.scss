@@ -252,7 +252,7 @@ margin-bottom: 20px;
   flex-grow: 1;
   font: 700 15px/1.6 "Inter", Helvetica, Arial, serif;
   letter-spacing: 0px;
-  margin: 0px 9px 0px 0px;
+  margin: 0px 9px -10px 0px;
 }
 
 .boxSubTitle{
@@ -262,7 +262,17 @@ margin-bottom: 20px;
   flex-grow: 1;
   font: 700 14px/1.5 "Lato", Helvetica, Arial, serif;
   letter-spacing: -0.1px;
-  margin: 1px 36px 0px 0px;
+  margin: 1px 36px -5px 0px;
+}
+
+.boxDescription{
+  align-items: center;
+  color: grey;
+  display: flex;
+  flex-grow: 1;
+  font:  12px/1 "Lato", Helvetica, Arial, serif;
+  letter-spacing: -0.1px;
+  margin: 5px 36px 0px 0px;
 }
 
 .map-container {

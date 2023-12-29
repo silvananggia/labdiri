@@ -22,21 +22,23 @@ class FetchPeralatanData extends Command
             $data = $response->json()['data'];
 
             foreach ($data as $item) {
-             // Map the API field name to the local field name
-             $item['idalatelsa'] = $item['id'];
+                // Map the API field name to the local field name
+                $item['idalatelsa'] = $item['id'];
 
-             // Unset the original API field name to avoid duplicate data
-             unset($item['id']);
+                // Unset the original API field name to avoid duplicate data
+                unset($item['id']);
 
-             // Generate a UUID for the "id" column
-             $item['id'] = Str::uuid();
+                // Generate a UUID for the "id" column
+                $item['id'] = Str::uuid();
 
-             // Check if the record already exists in the database based on the 'idalatelsa' field
-             $existingRecord = Peralatan::where('idalatelsa', $item['idalatelsa'])->first();
+                // Calculate the checksum for the new or updated data
+                $newChecksum = md5(serialize($item));
+
+                // Check if the record already exists in the database based on the 'idalatelsa' field
+                $existingRecord = Peralatan::where('idalatelsa', $item['idalatelsa'])->first();
 
                 if ($existingRecord) {
-                    // Check if data has changed by comparing a checksum
-                    $newChecksum = md5(serialize($item));
+                    // Check if data has changed by comparing the checksum
                     $oldChecksum = $existingRecord->checksum;
 
                     if ($newChecksum !== $oldChecksum) {
@@ -50,13 +52,11 @@ class FetchPeralatanData extends Command
                     }
                 } else {
                     // If the record does not exist, insert it
+                    $item['checksum'] = $newChecksum; // Set the checksum for the new record
                     $createdRecord = Peralatan::create($item);
                     $this->info("Record with ID {$item['idalatelsa']} added.");
-
-
                 }
             }
-
 
             $this->info('Data fetched and saved/updated successfully.');
         } else {

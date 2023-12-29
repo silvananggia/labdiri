@@ -47,8 +47,7 @@ console.log(code);
     const filteredCount = props.laboratorium.laboratoriumlist.filter(
       (item) =>
         item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.lokasi.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.lokasi.keterangan.toLowerCase().includes(searchQuery.toLowerCase())
+        item.lokasi_kawasan.toLowerCase().includes(searchQuery.toLowerCase()) 
     ).length;
 
     setFilteredDataCount(filteredCount);
@@ -139,6 +138,7 @@ console.log(code);
                   </Link>
                   <div className="boxSubTitle">{item.lokasi_kawasan}</div>{/* 
                   <div className="boxSubTitle">{item.lokasi.keterangan}</div> */}
+                  <div className="boxDescription">{item.deskripsi}</div>
                 </Col>
               ))}
             </Row>
