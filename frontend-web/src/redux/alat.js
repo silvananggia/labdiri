@@ -1,6 +1,7 @@
 import {
   GET_ALAT,
   GET_ALAT_ID,
+  GET_FILTER_ALAT,
 } from "../actions/types";
 
 const initialstate = {
@@ -8,6 +9,7 @@ const initialstate = {
   alatlist: [],
   alatobj: {},
   labobj: {},
+  lokasilist: [],
   errmessage: "",
 };
 
@@ -32,6 +34,14 @@ function alatReducer(alat = initialstate, action) {
         alatobj: action.payload.data,
         labobj: action.payload.data.laboratorium,
        
+      };
+
+      case GET_FILTER_ALAT:
+      return {
+        loading: false,
+        errmessage: "",
+        alatlist: action.payload,
+        alatobj: {},
       };
 
     default:

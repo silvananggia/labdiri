@@ -13,10 +13,45 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\LaboratoriumResource;
+use App\Http\Resources\LabListResource;
+use App\Http\Resources\LokasiListResource;
 
 
 class LabController extends BaseController
 {
+    public function listLab()
+    {
+        try {
+
+            $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
+                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab_detail.status')
+                ->get();
+
+
+
+            return $this->sendResponse(LabListResource::collection($labs), 'Data retrieved successfully.');
+
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function listLokasi()
+    {
+        try {
+
+            $labs = Lab::distinct('lokasi_kawasan')->get();
+
+
+
+            return $this->sendResponse(LokasiListResource::collection($labs), 'Data retrieved successfully.');
+
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
     public function getAllLab()
     {
         try {
@@ -48,7 +83,7 @@ class LabController extends BaseController
         }
     }
 
-    public function getLabById($id) : JsonResponse
+    public function getLabById($id): JsonResponse
     {
         try {
             // Make a GET request to the API endpoint
@@ -73,8 +108,8 @@ class LabController extends BaseController
 
         if ($id === "all") {
             $laboratorium = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
-            ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
-            ->get();
+                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
+                ->get();
         } else {
             $laboratorium = Lab::with(['kategorilab', 'lokasi', 'alat'])->where('idkategori', $id)->get();
 

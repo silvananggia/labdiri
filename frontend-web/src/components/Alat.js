@@ -7,6 +7,7 @@ import {
   Row,
   Col,
   Button,
+  Label,
   Input,
   FormGroup,
   Alert,
@@ -16,11 +17,10 @@ import {
   PaginationItem,
   PaginationLink,
 } from "reactstrap";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-
-import { getAllAlat, getAlatID } from "../actions/alat";
-import { getLaboratoriumID } from "../actions/laboratorium";
+import Select from "react-select";
+import { getAllAlat, getAlatID, getFilterAlat } from "../actions/alat";
+import { getLokasiList } from "../actions/filter";
+import { getLaboratoriumID, getLabList } from "../actions/laboratorium";
 
 import CardSkeleton from "./Card/LabCardSkeleton"; // Adjust the path accordingly
 
@@ -35,34 +35,46 @@ function Alat(props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [idlab, setIDLab] = useState("all");
   const [namaLab, setNamaLab] = useState("");
-  const [limit, setLimit] = useState(15);
+  const [fnama, setFNama] = useState("");
+  const [flab, setFLab] = useState("");
+  const [fidlab, setFidLab] = useState("");
+  const [flokasi, setFLokasi] = useState("");
+  const [isFiltered, setIsFiltered] = useState(false);
+  const [limit, setLimit] = useState(12);
   const pageRangeDisplayed = 3; // Adjust the value as needed
 
   useEffect(() => {
-    props.loadalat(idlab, limit, currentPage);
-  }, [idlab, limit, currentPage]);
+    dispatch(getLabList());
+    dispatch(getLokasiList());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if(isFiltered){
+      dispatch(getFilterAlat(fidlab, fnama, flokasi, limit, currentPage));
+    } else{
+      props.loadalat(idlab, limit, currentPage);
+    }
+   
+  }, [idlab,limit, currentPage]);
 
   const isLoading = props.alat.loading;
 
   const paginatedData = props.alat.alatlist.data || []; // Ensure to have an empty array if data is undefined
   const pagination = props.alat.alatlist.pagination;
-  const totalPages = pagination
-    ?pagination.last_page
-    : 0;
+  const totalPages = pagination ? pagination.last_page : 0;
 
-    useEffect(() => {
-      setCurrentPage(1);
-    }, [limit]);
-  
-    const handleLimitChange = (newLimit) => {
-      setLimit(newLimit);
-      setCurrentPage(1); // Reset to the first page when changing the limit
-    };
-  
-    const handlePageChange = (newPage) => {
-      setCurrentPage(newPage);
-    };
-  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [limit]);
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setCurrentPage(1); // Reset to the first page when changing the limit
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   const renderPagination = () => {
     if (totalPages <= 1) {
@@ -93,6 +105,10 @@ function Alat(props) {
   const laboratoriumobj = useSelector(
     (state) => state.laboratorium.laboratoriumobj
   );
+
+  const lablist = useSelector((state) => state.laboratorium.lablist);
+  const lokasilist = useSelector((state) => state.filter.lokasilist);
+
   useEffect(() => {
     if (idlab !== "all") {
       dispatch(getLaboratoriumID(idlab));
@@ -104,6 +120,28 @@ function Alat(props) {
       setNamaLab(laboratoriumobj.nama);
     }
   }, [laboratoriumobj]);
+
+  const handleSubmit = () => {
+    setCurrentPage(1);
+    dispatch(getFilterAlat(fidlab, fnama, flokasi, limit, currentPage));
+    setIsFiltered(true);
+    
+  };
+
+  const handleReset = () => {
+  // Clear filter values
+  setFNama("");
+  setFLokasi("");
+  setFLab("");
+  setFidLab("");
+  
+  
+  // Reset state
+  setIsFiltered(false);
+
+  // Load data with default values (all)
+  props.loadalat("all", limit, currentPage);
+  };
 
   return (
     <Fragment>
@@ -126,61 +164,130 @@ function Alat(props) {
               {namaLab ? "Alat " + namaLab : "Alat Laboratorium"}
             </h2>
           </div>
-          <div className="mx-0 mt-1 mb-50">
-            <Col sm="6">
-              <Input
-                type="text"
-                placeholder="Cari Alat atau Laboratorium..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </Col>
-            <Col sm="3">
-              <Input
-                type="select"
-                value={limit}
-                onChange={(e) => handleLimitChange(e.target.value)}
-              >
-                {availableLimits.map((l) => (
-                  <option key={l} value={l}>
-                    {`Tampilkan ${l} per halaman`}
-                  </option>
-                ))}
-              </Input>
-            </Col>
-            <Col sm="3">
-              <Button color="primary" onClick={() => setSearchQuery("")}>
-                Hapus Pencarian
-              </Button>
-            </Col>
-          </div>
-          <br />
-          {searchQuery && (
-            <div className="mb-3">
-              {" "}
-              {/* Add margin-bottom */}
-              <Alert color="info">Ditemukan : {filteredDataCount} data</Alert>
+          <div className="row">
+            {/* Filter Column */}
+            <div className="col-md-3">
+              <div className="mx-0 mt-1 mb-50">
+                <div className="filterBox">
+                  <div className="filterTitle">Filter</div>
+                  <div className="filterContent">
+                    <Col sm="12">
+                      <FormGroup>
+                        <Label for="namaAlat">Nama Alat</Label>
+                        <Input
+                          type="text"
+                          name="namaAlat"
+                          id="namaAlat"
+                          value={fnama}
+                          onChange={(e) => setFNama(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm="12">
+                      <FormGroup>
+                        <Label for="namaLaboratorium">Laboratorium</Label>
+                        <Select
+                          id="namaLaboratorium"
+                          options={[
+                            { value: "", label: "Semua Laboratorium" },
+                            ...(lablist?.map((lab) => ({
+                              value: lab.id,
+                              label: lab.nama,
+                            })) || []),
+                          ]}
+                          value={{ value: flab, label: flab }}
+                          onChange={(selectedOption) => {
+                            setFidLab(selectedOption.value);
+                            setFLab(selectedOption.label); // Set flab based on selected option label
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm="12">
+                      <FormGroup>
+                        <Label for="lokasi">Lokasi</Label>
+                        <Select
+                          id="lokasi"
+                          options={[
+                            { value: "", label: "Semua Lokasi" },
+                            ...(lokasilist?.map((lokasi) => ({
+                              value: lokasi.lokasi_kawasan,
+                              label: lokasi.lokasi_kawasan,
+                            })) || []),
+                          ]}
+                          value={{ value: flokasi, label: flokasi }}
+                          onChange={(selectedOption) => {
+                            setFLokasi(selectedOption.value); // Set flokasi based on selected option label
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm="12">
+                      <Button color="primary" onClick={handleSubmit} block>
+                        Terapkan
+                      </Button>
+                    </Col>
+                    {""}
+                    <br />
+                    {isFiltered && (
+                      <Col sm="12">
+                        <Button color="primary" onClick={handleReset} block>
+                          Hapus Filter
+                        </Button>
+                      </Col>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-          <div className="wrapper">
-            <Row>
-              {paginatedData.map((item, index) => (
-                <Col key={item.id} className="my-3">
-                  <Link
-                    className="ms-2"
-                    color="primary"
-                    to={`/alat-lab/${item.id}`}
-                    style={{ textDecoration: "none", color: "black" }}
-                  >
-                    <Suspense fallback={<CardSkeleton />}>
-                      <AlatCard item={item} />
-                    </Suspense>
-                  </Link>
-                </Col>
-              ))}
-            </Row>
+
+            {/* Content Column */}
+            <div className="col-md-9">
+              {/* Limit Content */}
+              <Col sm="4" className="ml-auto">
+                <Input
+                  type="select"
+                  value={limit}
+                  onChange={(e) => handleLimitChange(e.target.value)}
+                >
+                  {availableLimits.map((l) => (
+                    <option key={l} value={l}>
+                      {`Tampilkan ${l} per halaman`}
+                    </option>
+                  ))}
+                </Input>
+              </Col>
+              {isFiltered &&
+                (pagination.total > 0 ? (
+                  <Alert color="info" className="mt-3">
+                    Ditemukan: {pagination.total} data
+                  </Alert>
+                ) : (
+                  <Alert color="danger" className="mt-3">
+                    Tidak Ada Data Ditemukan
+                  </Alert>
+                ))}
+              <div className="wrapper">
+                <Row>
+                  {paginatedData.map((item, index) => (
+                    <Col key={item.id} className="my-3">
+                      <Link
+                        className="ms-2"
+                        color="primary"
+                        to={`/alat-lab/${item.id}`}
+                        style={{ textDecoration: "none", color: "black" }}
+                      >
+                        <Suspense fallback={<CardSkeleton />}>
+                          <AlatCard item={item} />
+                        </Suspense>
+                      </Link>
+                    </Col>
+                  ))}
+                </Row>
+              </div>
+              <div className="pagination">{renderPagination()}</div>
+            </div>
           </div>
-          <div className="pagination">{renderPagination()}</div>
         </div>
       </section>
     </Fragment>

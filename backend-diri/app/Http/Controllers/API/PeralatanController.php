@@ -139,4 +139,69 @@ class PeralatanController extends BaseController
             ],
         ], 'Data retrieved successfully.');
     }
+
+    public function searchPeralatan()
+    {
+        try {
+            $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
+            $page = request('page', 1); // Get the requested page from the request
+            $idlab = request('idlab', null); // Get the requested limit from the request, default to 10 if not provided
+            $nama = request('nama', null);
+            $lokasi = request('lokasi', null);
+
+            $alatQuery = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
+                ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+                ->select(
+                    'peralatan.idalatelsa AS alat_id',
+                    'peralatan.satuan_kerja_id',
+                    'peralatan.kode_barang',
+                    'peralatan.nup',
+                    'peralatan.nama_barang',
+                    'peralatan.merk',
+                    'peralatan.tahun_perolehan',
+                    'peralatan.kondisi',
+                    'peralatan_detail.spesifikasi',
+                    'peralatan_detail.fungsi',
+                    'peralatan_detail.deskripsi',
+                    'peralatan_detail.fungsi',
+                    'peralatan_detail.deskripsi',
+                    'peralatan_detail.dimensi',
+                    'peralatan_detail.harga_perolehan',
+                    'peralatan_detail.keterangan',
+                    'lab.idlabelsa',
+                    'lab.nama AS nama_lab',
+                    'lab.lokasi_kawasan'
+                );
+
+                if ($nama) {
+                    $alatQuery->whereRaw('LOWER(peralatan.nama_barang) like ?', ["%" . strtolower($nama) . "%"]);
+                }
+
+            if ($idlab) {
+                $alatQuery->where('lab.idlabelsa', $idlab);
+            }
+
+            if ($lokasi) {
+                $alatQuery->whereRaw('LOWER(lab.lokasi_kawasan) = ?', [strtolower($lokasi)]);
+            }
+
+            $alat = $alatQuery->paginate($perPage, ['*'], 'page', $page);
+
+            // Loop through the labs and add data to lab_detail if it does
+
+            return $this->sendResponse([
+                'data' => AlatResource::collection($alat),
+                'pagination' => [
+                    'total' => $alat->total(),
+                    'per_page' => $alat->perPage(),
+                    'current_page' => $alat->currentPage(),
+                    'last_page' => $alat->lastPage(),
+                    'from' => $alat->firstItem(),
+                    'to' => $alat->lastItem(),
+                ],
+            ], 'Data retrieved successfully.');
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
 }

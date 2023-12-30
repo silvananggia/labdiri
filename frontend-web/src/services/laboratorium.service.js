@@ -1,5 +1,11 @@
 import axios from "../api/axios";
 
+const getLabList = () => {
+  return axios.get("/getlistlab");
+};
+
+
+
 const getLaboratoriumAll = () => {
   return axios.get("/getlab");
 };
@@ -13,6 +19,8 @@ const getLaboratoriumCat = (id) => {
 };
 
 const LaboratoriumService = {
+
+    getLabList,
     getLaboratoriumAll,
     getLaboratorium,
     getLaboratoriumCat,

@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment, lazy, Suspense  } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector, connect } from "react-redux";
 import {
@@ -12,23 +12,25 @@ import { getAllLaboratorium, getLaboratoriumID } from "../actions/laboratorium";
 import { getAllAlat, getAlatID } from "../actions/alat";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
+import CardSkeleton from "./Card/LabCardSkeleton"; // Adjust the path accordingly
+const AlatCard = lazy(() => import("./Card/AlatCard"));
 function Laboratorium(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const { code } = useParams();
 
   useEffect(() => {
     props.getlaboratorium(code);
-    props.loadalat(code);
-  }, [code]);
+    props.loadalat(code, limit, currentPage);
+  }, [code, limit, currentPage]);
 
   const laboratoriumobj = useSelector(
     (state) => state.laboratorium.laboratoriumobj[0]
   );
   const alatlist = useSelector(
-    (state) => state.alat.alatlist
+    (state) => state.alat.alatlist.data
   );
 
   return (
@@ -148,29 +150,32 @@ function Laboratorium(props) {
             <h2 className="titleLeft">Alat {laboratoriumobj?.nama || ""}</h2>
           </div>
           <div className="wrapper">
-            <Row className="boxItem">
-              {alatlist.slice(0, 12).map((item, index) => (
-                <Col key={item.id}>
-                  <Link
-                    className="ms-2"
-                    color="primary"
-                    to={`/alat-lab/${item.id}`}
-                  >
-                    <div className="boxAlat box">
-                      <img src={item.images[0]?.url || ""} alt={item.nama || ""} />
-                    </div>
-                    <div className="boxTitle">
-                      <h5>{item.nama || ""}</h5>
-                    </div>
-                  </Link>
-                  <div className="boxSubTitle">{item.laboratorium || ""}</div>
-                  <div className="boxSubTitle">
-                    {item.lokasi_kawasan || ""}
-                  </div>
-                </Col>
-              ))}
-            </Row>
+          <Row>
+                {props.alat.loading
+                  ? // Display skeletons while loading
+                    Array.from({ length: 4 }).map((_, index) => (
+                      <CardSkeleton key={index} />
+                    ))
+                  : Array.isArray(props.alat.alatlist.data)
+                  ? props.alat.alatlist.data.map((item, index) => (
+                      <Col key={item.id}  className="my-3">
+                        <Link
+                          className="ms-2"
+                          color="primary"
+                          to={`alat-lab/${item.id}`}
+                        >
+                          <Suspense fallback={<CardSkeleton />}>
+                            <AlatCard item={item} />
+                          </Suspense>
+                        </Link>
+
+                       
+                      </Col>
+                    ))
+                  : null}
+              </Row>
           </div>
+          <div style={{ paddingTop: "20px", marginTop: "20px" }}>
           <Button
             onClick={() => navigate("/alat-lab")}
             className="btn pull-right"
@@ -180,6 +185,7 @@ function Laboratorium(props) {
           >
             Lihat Alat Lainnya
           </Button>
+          </div>
         </div>
       </section>
     ) : null}
@@ -197,7 +203,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getlaboratorium: (code) => dispatch(getLaboratoriumID(code)),
-    loadalat: (code) => dispatch(getAllAlat(code)),
+    loadalat: (code, limit, currentPage) => dispatch(getAllAlat(code, limit, currentPage)),
   };
 };
 

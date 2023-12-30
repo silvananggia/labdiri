@@ -1,13 +1,16 @@
 import {
-
   GET_LABORATORIUM,
   GET_LABORATORIUM_ID,
-  GET_LABORATORIUM_CAT
+  GET_LABORATORIUM_CAT,
+  GET_LAB_LIST,
+
 } from "../actions/types";
 
 const initialstate = {
   loading: true,
   laboratoriumlist: [],
+  lablist: [],
+ 
   laboratoriumobj: {},
   errmessage: "",
 };
@@ -24,7 +27,6 @@ function laboratoriumReducer(laboratorium = initialstate, action) {
         laboratoriumobj: {},
       };
 
-  
     case GET_LABORATORIUM_ID:
       return {
         ...laboratorium,
@@ -32,13 +34,23 @@ function laboratoriumReducer(laboratorium = initialstate, action) {
         laboratoriumobj: action.payload.data,
       };
 
-      case GET_LABORATORIUM_CAT:
-        return {
-          loading: false,
-          errmessage: "",
-          laboratoriumlist: action.payload,
-          laboratoriumobj: {},
-        };
+    case GET_LABORATORIUM_CAT:
+      return {
+        loading: false,
+        errmessage: "",
+        laboratoriumlist: action.payload,
+        laboratoriumobj: {},
+      };
+
+    case GET_LAB_LIST:
+      return {
+        loading: false,
+        errmessage: "",
+        lablist: action.payload,
+        laboratoriumobj: {},
+      };
+
+   
 
     default:
       return laboratorium;

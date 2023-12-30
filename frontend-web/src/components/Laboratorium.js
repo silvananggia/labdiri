@@ -10,6 +10,9 @@ import {
   Alert,
   Breadcrumb,
   BreadcrumbItem,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
 } from "reactstrap"; // Import Alert
 import { MapPin } from "react-feather";
 import {
@@ -74,8 +77,7 @@ function Laboratorium(props) {
     .filter(
       (item) =>
         item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.lokasi.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.lokasi.keterangan.toLowerCase().includes(searchQuery.toLowerCase())
+        item.lokasi_kawasan.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 

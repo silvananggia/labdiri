@@ -52,6 +52,9 @@ Route::get('getalat', [PeralatanController::class, 'getAllPeralatan']);
 Route::get('getallalat/{idlab}', [PeralatanController::class, 'showbylab']);
 Route::get('getalat/{id}', [PeralatanController::class, 'getPeralatanById']);
 Route::get('getpage/{slug}', [PagesController::class, 'show']);
+Route::get('getlistlab', [LabController::class, 'listLab']);
+Route::get('getlistlokasi', [LabController::class, 'listLokasi']);
+Route::get('filteralat', [PeralatanController::class, 'searchPeralatan']);
 
 Route::middleware(['auth:api','role','scope:admin'])->group( function () {
     Route::post('/fetch-laboratorium-data', [ApiController::class, 'FetchLaboratoriumData']);

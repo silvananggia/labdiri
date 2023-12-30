@@ -89,7 +89,13 @@ class CarouselHome extends Component {
     return (
       <div>
         <style>
+
           {`
+          @media (max-width: 768px) {
+            .carousel-caption {
+              visibility: visible; /* Adjust the visibility for smaller screens */
+            }
+          }
             .custom-tag {
               max-width: 100%;
               height: 500px;
