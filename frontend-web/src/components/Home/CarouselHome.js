@@ -76,7 +76,11 @@ class CarouselHome extends Component {
           onExiting={this.onExiting}
           onExited={this.onExited}
         >
-          <img src={item.src} alt={item.altText} width="100%"/>
+          <img 
+            src={item.src} 
+            alt={item.altText} 
+            className="carousel-image" 
+          />
           <CarouselCaption captionText={item.altText} captionHeader={item.caption} />
         </CarouselItem>
       );
@@ -85,13 +89,23 @@ class CarouselHome extends Component {
     return (
       <div>
         <style>
-          {
-            `.custom-tag {
-                max-width: 100%;
-                height: 500px;
-                background: black;
-              }`
-          }
+          {`
+            .custom-tag {
+              max-width: 100%;
+              height: 500px;
+              background: black;
+            }
+            .carousel-image {
+              width: 100%;
+              height: auto;
+              object-fit: cover; /* This property ensures the image covers the entire container while maintaining its aspect ratio */
+            }
+            @media (max-width: 768px) {
+              .custom-tag {
+                height: 300px; /* Adjust the height for mobile devices */
+              }
+            }
+          `}
         </style>
         <Carousel
           activeIndex={activeIndex}

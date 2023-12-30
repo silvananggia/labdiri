@@ -36,7 +36,7 @@ function Home(props) {
           <Col className="divider"></Col>
           <CarouselHome />
         </section>
-        <section className="kategoriLab">
+        {/* <section className="kategoriLab">
           <div className="container">
             <div>
               <h2 className="titleCenter">Kategori Laboratorium</h2>
@@ -66,7 +66,7 @@ function Home(props) {
               </Row>
             </div>
           </div>
-        </section>
+        </section> */}
 
         <section className="listLab">
           <div className="container">
