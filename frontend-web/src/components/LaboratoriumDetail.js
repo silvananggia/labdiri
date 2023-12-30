@@ -2,7 +2,14 @@ import React, { useState, useEffect, Fragment, lazy, Suspense } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector, connect } from "react-redux";
 import ReactPaginate from "react-paginate";
-import { Row, Col, Button, Breadcrumb, BreadcrumbItem,  Input} from "reactstrap"; // Import Alert
+import {
+  Row,
+  Col,
+  Button,
+  Breadcrumb,
+  BreadcrumbItem,
+  Input,
+} from "reactstrap"; // Import Alert
 import { getAllLaboratorium, getLaboratoriumID } from "../actions/laboratorium";
 import { getAllAlat, getAlatID } from "../actions/alat";
 import Skeleton from "react-loading-skeleton";
@@ -18,6 +25,20 @@ function Laboratorium(props) {
   const pageRangeDisplayed = 3; // Adjust the value as needed
 
   const { code } = useParams();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Update isMobile state on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     props.getlaboratorium(code);
@@ -52,8 +73,8 @@ function Laboratorium(props) {
     return (
       <ReactPaginate
         pageCount={totalPages}
-        pageRangeDisplayed={pageRangeDisplayed}
-        marginPagesDisplayed={2}
+        pageRangeDisplayed={isMobile ? 1 : pageRangeDisplayed}
+        marginPagesDisplayed={isMobile ? 1 : 2}
         onPageChange={({ selected }) => handlePageChange(selected + 1)}
         forcePage={currentPage - 1}
         containerClassName={"pagination"}
@@ -209,23 +230,30 @@ function Laboratorium(props) {
                   : null}
               </Row>
             </div>
-            <div className="pagination" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-  <Col sm="4">
-    <Input
-      type="select"
-      value={limit}
-      onChange={(e) => handleLimitChange(e.target.value)}
-    >
-      {availableLimits.map((l) => (
-        <option key={l} value={l}>
-          {`Tampilkan ${l} per halaman`}
-        </option>
-      ))}
-    </Input>
-  </Col>
-  {renderPagination()}
-</div>
-            
+            <div
+              className="pagination"
+              style={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Col sm="4" className={isMobile ? "mb-2" : ""}>
+                <Input
+                  type="select"
+                  value={limit}
+                  onChange={(e) => handleLimitChange(e.target.value)}
+                >
+                  {availableLimits.map((l) => (
+                    <option key={l} value={l}>
+                      {`Tampilkan ${l} per halaman`}
+                    </option>
+                  ))}
+                </Input>
+              </Col>
+              {renderPagination()}
+            </div>
           </div>
         </section>
       ) : null}

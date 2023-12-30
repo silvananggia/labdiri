@@ -30,6 +30,7 @@ function Alat(props) {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredDataCount, setFilteredDataCount] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const availableLimits = [10, 25, 50, 100];
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +43,17 @@ function Alat(props) {
   const [isFiltered, setIsFiltered] = useState(false);
   const [limit, setLimit] = useState(12);
   const pageRangeDisplayed = 3; // Adjust the value as needed
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
 
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   useEffect(() => {
     dispatch(getLabList());
     dispatch(getLokasiList());
@@ -83,21 +94,21 @@ function Alat(props) {
 
     return (
       <ReactPaginate
-        pageCount={totalPages}
-        pageRangeDisplayed={pageRangeDisplayed}
-        marginPagesDisplayed={2}
-        onPageChange={({ selected }) => handlePageChange(selected + 1)}
-        forcePage={currentPage - 1}
-        containerClassName={"pagination"}
-        pageClassName={"page-item"}
-        pageLinkClassName={"page-link"}
-        activeClassName={"active"}
-        previousClassName={"page-item"}
-        previousLinkClassName={"page-link"}
-        nextClassName={"page-item"}
-        nextLinkClassName={"page-link"}
-        breakClassName={"page-item"}
-        breakLinkClassName={"page-link"}
+      pageCount={totalPages}
+      pageRangeDisplayed={isMobile ? 1 : pageRangeDisplayed}
+      marginPagesDisplayed={isMobile ? 1 : 2}
+      onPageChange={({ selected }) => handlePageChange(selected + 1)}
+      forcePage={currentPage - 1}
+      containerClassName={"pagination"}
+      pageClassName={"page-item"}
+      pageLinkClassName={"page-link"}
+      activeClassName={"active"}
+      previousClassName={"page-item"}
+      previousLinkClassName={"page-link"}
+      nextClassName={"page-item"}
+      nextLinkClassName={"page-link"}
+      breakClassName={"page-item"}
+      breakLinkClassName={"page-link"}
       />
     );
   };
@@ -138,7 +149,7 @@ function Alat(props) {
   
   // Reset state
   setIsFiltered(false);
-
+  setCurrentPage(1);
   // Load data with default values (all)
   props.loadalat("all", limit, currentPage);
   };
