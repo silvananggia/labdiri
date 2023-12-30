@@ -49,11 +49,12 @@ const User = (props) => {
       selector: (row) => row.username_intra,
       sortable: true,
     },
-   /*  {
-      name: "Roles",
-      selector: (row) => row.roles?.role || "Belum Memiliki Roles",
+     {
+      name: "Name",
+      selector: (row) => row.name,
       sortable: true,
     },
+    /*
     {
       name: "Status",
       cell: (row) => (
@@ -96,9 +97,7 @@ const User = (props) => {
   ];
 
   const filteredData = props.user.userlist.filter((item) =>
-    item.name.toLowerCase().includes(globalFilter.toLowerCase()) ||
-    item.name.toLowerCase().includes(globalFilter.toLowerCase()) ||
-    item.email.toLowerCase().includes(globalFilter.toLowerCase())
+    item.username_intra.toLowerCase().includes(globalFilter.toLowerCase()) 
   );
 
   const pageCount = Math.ceil(filteredData.length / rowsPerPage);

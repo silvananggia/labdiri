@@ -1,10 +1,26 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, lazy, Suspense } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { connect,useSelector,useDispatch } from "react-redux";
-import { Row, Col, Button, Input, Alert, Breadcrumb, BreadcrumbItem } from "reactstrap"; // Import Alert
-import { getAllLaboratorium, getLaboratoriumID, getLaboratoriumCat } from "../actions/laboratorium";
-import { getKategoriID  } from "../actions/kategorilab";
+import { connect, useSelector, useDispatch } from "react-redux";
 
+import {
+  Row,
+  Col,
+  Button,
+  Input,
+  Alert,
+  Breadcrumb,
+  BreadcrumbItem,
+} from "reactstrap"; // Import Alert
+import { MapPin } from "react-feather";
+import {
+  getAllLaboratorium,
+  getLaboratoriumID,
+  getLaboratoriumCat,
+} from "../actions/laboratorium";
+import { getKategoriID } from "../actions/kategorilab";
+import LabCardSkeleton from "./Card/LabCardSkeleton"; // Adjust the path accordingly
+
+const LabCard = lazy(() => import("./Card/LabCard"));
 function Laboratorium(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,24 +32,21 @@ function Laboratorium(props) {
   const [namaKat, setNamaKat] = useState("");
   const { code } = useParams("");
 
-
   useEffect(() => {
-    if(code){
-    props.loadlaboratorium(code);}
-    else {
+    if (code) {
+      props.loadlaboratorium(code);
+    } else {
       props.loadlaboratorium("all");
     }
   }, []);
 
-  const kategoriobj = useSelector(
-    (state) => state.kategori.kategoriobj
-  );
+  const kategoriobj = useSelector((state) => state.kategori.kategoriobj);
   useEffect(() => {
-    if(code !== "all"){
-console.log(code);
+    if (code !== "all") {
+      console.log(code);
       dispatch(getKategoriID(code));
     }
-  }, [ ]);
+  }, []);
 
   useEffect(() => {
     if (kategoriobj) {
@@ -42,12 +55,11 @@ console.log(code);
     }
   }, [kategoriobj]);
 
-
   useEffect(() => {
     const filteredCount = props.laboratorium.laboratoriumlist.filter(
       (item) =>
         item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.lokasi_kawasan.toLowerCase().includes(searchQuery.toLowerCase()) 
+        item.lokasi_kawasan.toLowerCase().includes(searchQuery.toLowerCase())
     ).length;
 
     setFilteredDataCount(filteredCount);
@@ -59,10 +71,11 @@ console.log(code);
 
   // Create a paginated data array based on the current page
   const paginatedData = props.laboratorium.laboratoriumlist
-    .filter((item) =>
-      item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.lokasi.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.lokasi.keterangan.toLowerCase().includes(searchQuery.toLowerCase())
+    .filter(
+      (item) =>
+        item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.lokasi.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.lokasi.keterangan.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -84,22 +97,24 @@ console.log(code);
 
   return (
     <Fragment>
-            <div className="breadcrumb">
+      <div className="breadcrumb">
         <div className="wrapper">
           <Breadcrumb>
             <BreadcrumbItem>
               <a href="/">Beranda</a>
             </BreadcrumbItem>
-            <BreadcrumbItem active>{namaKat ? 
-              "Kategori Laboratorium : "+namaKat : "Laboratorium"}</BreadcrumbItem>
+            <BreadcrumbItem active>
+              {namaKat ? "Kategori Laboratorium : " + namaKat : "Laboratorium"}
+            </BreadcrumbItem>
           </Breadcrumb>
         </div>
       </div>
       <section className="listLab">
         <div className="container">
           <div>
-            <h2 className="titleLeft">{namaKat ? 
-              "Kategori Laboratorium : "+namaKat : "Laboratorium"}</h2>
+            <h2 className="titleLeft">
+              {namaKat ? "Kategori Laboratorium : " + namaKat : "Laboratorium"}
+            </h2>
           </div>
           <div className="search-container">
             <Row className="mx-0 mt-1 mb-50">
@@ -123,22 +138,22 @@ console.log(code);
               Ditemukan: {filteredDataCount} data
             </Alert>
           )}
-          <br/>
+          <br />
           <div className="wrapper">
-            <Row className="boxItem">
+            <Row>
               {paginatedData.map((item, index) => (
-                <Col key={item.id}>
-                  <Link className="ms-2" color="primary" to={`/laboratorium/${item.id}`}>
-                  <div className="boxLab box">
-                    <img src={item.images[0].url} alt={item.nama} />
-                  </div>
-                  <div className="boxTitle">
-                    <h5>{item.nama}</h5>
-                  </div>
+
+                <Col key={item.id} className="my-3">
+                  <Link
+                    className="ms-2"
+                    color="primary"
+                    to={`/laboratorium/${item.id}`}
+                    style={{ textDecoration: "none", color: "black" }}
+                  >
+                   <Suspense fallback={<LabCardSkeleton />}>
+                  <LabCard item={item} />
+                </Suspense>
                   </Link>
-                  <div className="boxSubTitle">{item.lokasi_kawasan}</div>{/* 
-                  <div className="boxSubTitle">{item.lokasi.keterangan}</div> */}
-                  <div className="boxDescription">{item.deskripsi}</div>
                 </Col>
               ))}
             </Row>
@@ -177,7 +192,6 @@ console.log(code);
 const mapStateToProps = (state) => {
   return {
     laboratorium: state.laboratorium,
-    
   };
 };
 

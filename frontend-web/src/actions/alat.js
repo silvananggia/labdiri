@@ -7,10 +7,10 @@ import {
 
 
   
-  export const getAllAlat = (id) => async (dispatch) => {
+  export const getAllAlat = (id,limit,page) => async (dispatch) => {
     try {
-      const res = await AlatService.getAlatAll(id);
-
+      const res = await AlatService.getAlatAll(id,limit,page);
+console.log(res);
       dispatch({
         type: GET_ALAT,
         payload: res.data.data,

@@ -261,7 +261,7 @@ const Login = () => {
             </Formik>
             <p className="text-center mt-2">
               <span className="me-25">Belum Memiliki Akun?</span>
-              <Link to="/register">
+              <Link to="https://sso.brin.go.id/auth/register">
                 <span>Daftar</span>
               </Link>
             </p>

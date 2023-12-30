@@ -16,9 +16,7 @@ class RolesResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'role' => $this->role,
-            'isVerified' => $this->isVerified,
-            'laboratorium' =>  new LaboratoriumResource($this->laboratorium),
+            'name' => $this->name,
 
 
         ];

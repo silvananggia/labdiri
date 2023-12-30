@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // ** Store & Actions
@@ -7,22 +7,27 @@ import { connect, useDispatch } from "react-redux";
 
 import CarouselHome from "./Home/CarouselHome";
 import { Row, Col, Button, NavLink } from "reactstrap";
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css'
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { getAllKategori, getKategoriID } from "../actions/kategorilab";
 import { getAllLaboratorium, getLaboratoriumID } from "../actions/laboratorium";
 import { getAllAlat, getAlatID } from "../actions/alat";
+import CardSkeleton from "./Card/LabCardSkeleton"; // Adjust the path accordingly
 
+const LabCard = lazy(() => import("./Card/LabCard"));
+const AlatCard = lazy(() => import("./Card/AlatCard"));
 function Home(props) {
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const idlab = "all";
   const idKat = "all";
 
   useEffect(() => {
     props.loadlaboratorium(idKat);
     props.loadkategori();
-    props.loadalat(idlab);
-  }, []);
+    props.loadalat(idlab, limit, currentPage);
+  }, [idKat, idlab, limit, currentPage]);
 
   return (
     <Fragment>
@@ -38,28 +43,26 @@ function Home(props) {
             </div>
             <div className="contentKategori  justify-content-center">
               <Row>
-                {props.kategori.loading ? (
-              // Display skeletons while loading
-              Array.from({ length: 3 }).map((_, index) => (
-                <Col key={index} className="centered-col">
-                  <Skeleton width={150} height={150} />
-                </Col>
-              ))
-            ) :
-                
-                props.kategori.kategorilist &&
-                  props.kategori.kategorilist.map((item, index) => (
-                    <Col key={item.id} className="centered-col">
-                      <Link
-                        className="ms-2"
-                        color="primary"
-                        to={`/laboratorium-kategori/${item.id}`}
-                      >
-                        <img src="https://cdn.medcom.id/dynamic/content/2022/01/31/1383719/3FP7ZzilxH.jpeg?w=700" />
-                        <div className="title">{item.nama}</div>
-                      </Link>
-                    </Col>
-                  ))}
+                {props.kategori.loading
+                  ? // Display skeletons while loading
+                    Array.from({ length: 3 }).map((_, index) => (
+                      <Col key={index} className="centered-col">
+                        <Skeleton width={150} height={150} />
+                      </Col>
+                    ))
+                  : props.kategori.kategorilist &&
+                    props.kategori.kategorilist.map((item, index) => (
+                      <Col key={item.id} className="centered-col">
+                        <Link
+                          className="ms-2"
+                          color="primary"
+                          to={`/laboratorium-kategori/${item.id}`}
+                        >
+                          <img src="https://cdn.medcom.id/dynamic/content/2022/01/31/1383719/3FP7ZzilxH.jpeg?w=700" />
+                          <div className="title">{item.nama}</div>
+                        </Link>
+                      </Col>
+                    ))}
               </Row>
             </div>
           </div>
@@ -71,50 +74,43 @@ function Home(props) {
               <h2 className="titleLeft">Laboratorium</h2>
             </div>
             <div className="wrapper">
-              <Row className="boxItem">
-                {props.laboratorium.loading ? (
-              // Display skeletons while loading
-              Array.from({ length: 3 }).map((_, index) => (
-                <Col key={index} className="centered-col">
-                  <Skeleton width={250} height={150} />
-                </Col>
-              ))
-            ) :props.laboratorium.laboratoriumlist &&
-                  props.laboratorium.laboratoriumlist
-                    .slice(0, 3)
-                    .map((item, index) => (
-                      <Col key={item.id}>
-                        <Link
-                          className="ms-2"
-                          color="primary"
-                          to={`laboratorium/${item.id}`}
-                        >
-                          <div className="boxLab box">
-                            <img src={item.images[0].url} alt={item.nama} />
-                          </div>
-
-                          <div className="boxTitle">
-                            <h5>{item.nama}</h5>
-                          </div>
-                        </Link>
-                        <div className="boxSubTitle">{item.lokasi_kawasan}</div>
-                        {/*  <div className="boxSubTitle">
-                        {item.lokasi.keterangan}
-                      </div> */}
-                      </Col>
-                    ))}
+              <Row>
+                {props.laboratorium.loading
+                  ? // Display skeletons while loading
+                    Array.from({ length: 4 }).map((_, index) => (
+                      <CardSkeleton />
+                    ))
+                  : props.laboratorium.laboratoriumlist &&
+                    props.laboratorium.laboratoriumlist
+                      .slice(0, 4)
+                      .map((item, index) => (
+                        <Col key={item.id} className="my-3">
+                          <Link
+                            className="ms-2"
+                            color="primary"
+                            to={`/laboratorium/${item.id}`}
+                            style={{ textDecoration: "none", color: "black" }}
+                          >
+                            <Suspense fallback={<CardSkeleton />}>
+                              <LabCard item={item} />
+                            </Suspense>
+                          </Link>
+                        </Col>
+                      ))}
               </Row>
             </div>
 
-            <Button
-              onClick={() => navigate("/laboratorium")}
-              className="btn pull-right"
-              color="primary"
-              size="sm"
-              style={{ float: "right" }}
-            >
-              Lihat Selengkapnya
-            </Button>
+            <div style={{ paddingTop: "20px", marginTop: "20px" }}>
+              <Button
+                onClick={() => navigate("/laboratorium")}
+                className="btn pull-right"
+                color="primary"
+                size="sm"
+                style={{ float: "right" }}
+              >
+                Lihat Selengkapnya
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -157,44 +153,33 @@ function Home(props) {
               <h2 className="titleLeft">Alat Laboratorium</h2>
             </div>
             <div className="wrapper">
-              <Row className="boxItem">
-                {props.alat.loading ? (
-              // Display skeletons while loading
-              Array.from({ length: 4 }).map((_, index) => (
-                <Col key={index} className="centered-col">
-                  <Skeleton width={250} height={150} />
-                </Col>
-              ))
-            ) : props.alat.alatlist &&
-                  props.alat.alatlist.slice(0, 12).map((item, index) => (
-                    <Col key={item.id}>
-                      <Link
-                        className="ms-2"
-                        color="primary"
-                        to={`alat-lab/${item.id}`}
-                      >
-                        <div className="boxAlat box">
-                          <img src={item.images[0].url } alt={item.nama} />
-                        </div>
+              <Row>
+                {props.alat.loading
+                  ? // Display skeletons while loading
+                    Array.from({ length: 4 }).map((_, index) => (
+                      <CardSkeleton key={index} />
+                    ))
+                  : Array.isArray(props.alat.alatlist.data)
+                  ? props.alat.alatlist.data.map((item, index) => (
+                      <Col key={item.id}  className="my-3">
+                        <Link
+                          className="ms-2"
+                          color="primary"
+                          to={`alat-lab/${item.id}`}
+                        >
+                          <Suspense fallback={<CardSkeleton />}>
+                            <AlatCard item={item} />
+                          </Suspense>
+                        </Link>
 
-                        <div className="boxTitle">
-                          <h5>{item.nama}</h5>
-                        </div>
-                      </Link>
-
-                      <div className="boxSubTitle">
-                        {item.laboratorium ? item.laboratorium.nama : "N/A"}
-                      </div>
-                      <div className="boxSubTitle">
-                        {item.laboratorium
-                          ? item.laboratorium.lokasi_kawasan
-                          : "N/A"}
-                      </div>
-                    </Col>
-                  ))}
+                       
+                      </Col>
+                    ))
+                  : null}
               </Row>
             </div>
 
+            <div style={{ paddingTop: "20px", marginTop: "20px" }}>
             <Button
               onClick={() => navigate("/alat-lab")}
               className="btn pull-right"
@@ -204,6 +189,7 @@ function Home(props) {
             >
               Lihat Selengkapnya
             </Button>
+            </div>
           </div>
         </section>
 
@@ -234,7 +220,8 @@ const mapDispatchToProps = (dispatch) => {
     loadkategori: () => dispatch(getAllKategori()),
     getkategori: (code) => dispatch(getKategoriID(code)),
 
-    loadalat: (idlab) => dispatch(getAllAlat(idlab)),
+    loadalat: (idlab, limit, currentPage) =>
+      dispatch(getAllAlat(idlab, limit, currentPage)),
     getalat: (code) => dispatch(getAlatID(code)),
   };
 };

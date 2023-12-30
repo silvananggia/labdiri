@@ -1,7 +1,7 @@
 import axios from "../api/axios";
 
-const getAlatAll = (id) => {
-  return axios.get(`/getallalat/${id}`);
+const getAlatAll = (id,limit,page) => {
+  return axios.get(`/getallalat/${id}?limit=${limit}&page=${page}`);
 };
 
 const getAlat = (id) => {
