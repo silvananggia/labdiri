@@ -60,9 +60,9 @@ function Menu() {
             <NavItem>
               <NavLink href="/alat-lab">Alat Laboratorium</NavLink>
             </NavItem>
-            <NavItem>
+{/*             <NavItem>
               <NavLink href="/layanan">Layanan</NavLink>
-            </NavItem>
+            </NavItem> */}
             <NavItem>
               <NavLink href="/hubungi-kami">Hubungi Kami</NavLink>
             </NavItem>
