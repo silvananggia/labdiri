@@ -3,7 +3,7 @@ import {
   GET_LABORATORIUM_ID,
   GET_LABORATORIUM_CAT,
   GET_LAB_LIST,
-
+GET_FILTER_LABORATORIUM,
 } from "../actions/types";
 
 const initialstate = {
@@ -50,7 +50,13 @@ function laboratoriumReducer(laboratorium = initialstate, action) {
         laboratoriumobj: {},
       };
 
-   
+      case GET_FILTER_LABORATORIUM:
+        return {
+          loading: false,
+          errmessage: "",
+          laboratoriumlist: action.payload,
+          laboratoriumobj: {},
+        };
 
     default:
       return laboratorium;

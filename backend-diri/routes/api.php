@@ -55,6 +55,7 @@ Route::get('getpage/{slug}', [PagesController::class, 'show']);
 Route::get('getlistlab', [LabController::class, 'listLab']);
 Route::get('getlistlokasi', [LabController::class, 'listLokasi']);
 Route::get('filteralat', [PeralatanController::class, 'searchPeralatan']);
+Route::get('filterlab', [LabController::class, 'searchLab']);
 
 Route::middleware(['auth:api','role','scope:admin'])->group( function () {
     Route::post('/fetch-laboratorium-data', [ApiController::class, 'FetchLaboratoriumData']);

@@ -4,8 +4,8 @@ const getLokasiList = () => {
   return axios.get("/getlistlokasi");
 };
 
-const getAlatAll = (id, limit, page) => {
-  return axios.get(`/getallalat/${id}?limit=${limit}&page=${page}`);
+const getAlatAll = (id, limit, page, random) => {
+  return axios.get(`/getallalat/${id}?limit=${limit}&page=${page}&rand=${random}`);
 };
 
 const getAlat = (id) => {

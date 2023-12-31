@@ -8,9 +8,9 @@ import {
 
 
   
-  export const getAllAlat = (id,limit,page) => async (dispatch) => {
+  export const getAllAlat = (id,limit,page,random) => async (dispatch) => {
     try {
-      const res = await AlatService.getAlatAll(id,limit,page);
+      const res = await AlatService.getAlatAll(id,limit,page,random);
 
       dispatch({
         type: GET_ALAT,

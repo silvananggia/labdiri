@@ -55,11 +55,13 @@ class LabController extends BaseController
     public function getAllLab()
     {
         try {
+            $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
+            $page = request('page', 1); // Get the requested page from the request
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
             $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
                 ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
-                ->get();
+                ->paginate($perPage, ['*'], 'page', $page);
 
             // Loop through the labs and add data to lab_detail if it doesn't exist
             foreach ($labs as $lab) {
@@ -75,8 +77,18 @@ class LabController extends BaseController
                 }
             }
 
-            return $this->sendResponse(LaboratoriumResource::collection($labs), 'Data retrieved successfully.');
-
+            // return $this->sendResponse(LaboratoriumResource::collection($labs), 'Data retrieved successfully.');
+            return $this->sendResponse([
+                'data' => LaboratoriumResource::collection($labs),
+                'pagination' => [
+                    'total' => $labs->total(),
+                    'per_page' => $labs->perPage(),
+                    'current_page' => $labs->currentPage(),
+                    'last_page' => $labs->lastPage(),
+                    'from' => $labs->firstItem(),
+                    'to' => $labs->lastItem(),
+                ],
+            ], 'Data retrieved successfully.');
 
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
@@ -105,26 +117,71 @@ class LabController extends BaseController
 
     public function showbykategori($id): JsonResponse
     {
+        $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
+        $page = request('page', 1); // Get the requested page from the request
+
 
         if ($id === "all") {
-            $laboratorium = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
+            $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
                 ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
-                ->get();
+                ->paginate($perPage, ['*'], 'page', $page);
         } else {
-            $laboratorium = Lab::with(['kategorilab', 'lokasi', 'alat'])->where('idkategori', $id)->get();
+            $labs = Lab::with(['kategorilab', 'lokasi', 'alat'])->where('idkategori', $id)->get();
 
         }
 
 
 
-        if ($laboratorium->isEmpty()) {
-            return $this->sendError('Data not found.', 404); // Return a 404 Not Found status code.
+        return $this->sendResponse([
+            'data' => LaboratoriumResource::collection($labs),
+            'pagination' => [
+                'total' => $labs->total(),
+                'per_page' => $labs->perPage(),
+                'current_page' => $labs->currentPage(),
+                'last_page' => $labs->lastPage(),
+                'from' => $labs->firstItem(),
+                'to' => $labs->lastItem(),
+            ],
+        ], 'Data retrieved successfully.');
+
+    }
+
+    public function searchLab()
+    {
+        try {
+            $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
+            $page = request('page', 1);  // Get the requested limit from the request, default to 10 if not provided
+            $nama = request('nama', null);
+            $lokasi = request('lokasi', null);
+
+            $labQuery = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
+                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status');
+
+            if ($nama) {
+                $labQuery->whereRaw('LOWER(lab.nama) like ?', ["%" . strtolower($nama) . "%"]);
+            }
+
+            if ($lokasi) {
+                $labQuery->whereRaw('LOWER(lab.lokasi_kawasan) = ?', [strtolower($lokasi)]);
+            }
+
+            $labs = $labQuery->paginate($perPage, ['*'], 'page', $page);
+
+            // Loop through the labs and add data to lab_detail if it does
+
+            return $this->sendResponse([
+                'data' => LaboratoriumResource::collection($labs),
+                'pagination' => [
+                    'total' => $labs->total(),
+                    'per_page' => $labs->perPage(),
+                    'current_page' => $labs->currentPage(),
+                    'last_page' => $labs->lastPage(),
+                    'from' => $labs->firstItem(),
+                    'to' => $labs->lastItem(),
+                ],
+            ], 'Data retrieved successfully.');
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
-
-        $transformedData = $laboratorium->map(function ($lab) {
-            return new LaboratoriumResource($lab);
-        });
-
-        return $this->sendResponse($transformedData, 'Data retrieved successfully.');
     }
 }

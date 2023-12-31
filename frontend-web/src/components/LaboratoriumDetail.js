@@ -93,18 +93,18 @@ function Laboratorium(props) {
   return (
     <Fragment>
       {props.laboratorium.loading ? (
-        <div className="container">
-          <Row>
-            <Col sm="4">
-              <Skeleton width={250} height={150} />
-            </Col>
-            <Col sm="8">
-              <Skeleton width={500} height={30} />
-              <Skeleton width={400} height={20} />
-              <Skeleton width={400} height={20} />
-              <Skeleton width={400} height={20} />
-            </Col>
-          </Row>
+            <div className="container">
+            <Row>
+                <Col sm="4">
+                    <Skeleton width={250} height={150} />
+                </Col>
+                <Col sm="8">
+                    <Skeleton width={500} height={30} />
+                    <Skeleton width={400} height={20} />
+                    <Skeleton width={400} height={20} />
+                    <Skeleton width={400} height={20} />
+                </Col>
+            </Row>
         </div>
       ) : laboratoriumobj &&
         laboratoriumobj.images &&
@@ -141,7 +141,7 @@ function Laboratorium(props) {
                     </div>
                   </Col>
                   <Col sm="8">
-                    <h1>{laboratoriumobj.nama || ""} </h1>
+                    <h3>{laboratoriumobj.nama || ""} </h3>
                     <h4>{laboratoriumobj.lokasi_kawasan || ""} </h4>
 
                     {/* <h4>{laboratoriumobj.lokasi?.keterangan} </h4> */}
@@ -272,7 +272,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getlaboratorium: (code) => dispatch(getLaboratoriumID(code)),
     loadalat: (code, limit, currentPage) =>
-      dispatch(getAllAlat(code, limit, currentPage)),
+      dispatch(getAllAlat(code, limit, currentPage,"false")),
   };
 };
 

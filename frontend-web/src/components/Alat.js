@@ -16,6 +16,7 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  Spinner,
 } from "reactstrap";
 import Select from "react-select";
 import { getAllAlat, getAlatID, getFilterAlat } from "../actions/alat";
@@ -42,7 +43,9 @@ function Alat(props) {
   const [flokasi, setFLokasi] = useState("");
   const [isFiltered, setIsFiltered] = useState(false);
   const [limit, setLimit] = useState(12);
-  const pageRangeDisplayed = 3; // Adjust the value as needed
+  const pageRangeDisplayed = 3;
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -60,15 +63,12 @@ function Alat(props) {
   }, [dispatch]);
 
   useEffect(() => {
-    if(isFiltered){
+    if (isFiltered) {
       dispatch(getFilterAlat(fidlab, fnama, flokasi, limit, currentPage));
-    } else{
+    } else {
       props.loadalat(idlab, limit, currentPage);
     }
-   
-  }, [idlab,limit, currentPage]);
-
-  const isLoading = props.alat.loading;
+  }, [idlab, limit, currentPage]);
 
   const paginatedData = props.alat.alatlist.data || []; // Ensure to have an empty array if data is undefined
   const pagination = props.alat.alatlist.pagination;
@@ -94,21 +94,21 @@ function Alat(props) {
 
     return (
       <ReactPaginate
-      pageCount={totalPages}
-      pageRangeDisplayed={isMobile ? 1 : pageRangeDisplayed}
-      marginPagesDisplayed={isMobile ? 1 : 2}
-      onPageChange={({ selected }) => handlePageChange(selected + 1)}
-      forcePage={currentPage - 1}
-      containerClassName={"pagination"}
-      pageClassName={"page-item"}
-      pageLinkClassName={"page-link"}
-      activeClassName={"active"}
-      previousClassName={"page-item"}
-      previousLinkClassName={"page-link"}
-      nextClassName={"page-item"}
-      nextLinkClassName={"page-link"}
-      breakClassName={"page-item"}
-      breakLinkClassName={"page-link"}
+        pageCount={totalPages}
+        pageRangeDisplayed={isMobile ? 1 : pageRangeDisplayed}
+        marginPagesDisplayed={isMobile ? 1 : 2}
+        onPageChange={({ selected }) => handlePageChange(selected + 1)}
+        forcePage={currentPage - 1}
+        containerClassName={"pagination"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        activeClassName={"active"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item"}
+        breakLinkClassName={"page-link"}
       />
     );
   };
@@ -132,26 +132,32 @@ function Alat(props) {
     }
   }, [laboratoriumobj]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setCurrentPage(1);
-    dispatch(getFilterAlat(fidlab, fnama, flokasi, limit, currentPage));
-    setIsFiltered(true);
-    
+    setIsLoading(true); // Set loading state to true
+
+    try {
+      await dispatch(getFilterAlat(fidlab, fnama, flokasi, limit, currentPage));
+      setIsFiltered(true);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false); // Reset loading state regardless of success or failure
+    }
   };
 
   const handleReset = () => {
-  // Clear filter values
-  setFNama("");
-  setFLokasi("");
-  setFLab("");
-  setFidLab("");
-  
-  
-  // Reset state
-  setIsFiltered(false);
-  setCurrentPage(1);
-  // Load data with default values (all)
-  props.loadalat("all", limit, currentPage);
+    // Clear filter values
+    setFNama("");
+    setFLokasi("");
+    setFLab("");
+    setFidLab("");
+
+    // Reset state
+    setIsFiltered(false);
+    setCurrentPage(1);
+    // Load data with default values (all)
+    props.loadalat("all", limit, currentPage);
   };
 
   return (
@@ -234,8 +240,19 @@ function Alat(props) {
                       </FormGroup>
                     </Col>
                     <Col sm="12">
-                      <Button color="primary" onClick={handleSubmit} block>
-                        Terapkan
+                      <Button
+                        color="primary"
+                        onClick={handleSubmit}
+                        className="w-100 me-2"
+                        disabled={isLoading} // Disable button when loading
+                      >
+                        {isLoading ? (
+                          <Spinner color="light" size="sm">
+                            Loading...
+                          </Spinner>
+                        ) : (
+                          "Cari"
+                        )}
                       </Button>
                     </Col>
                     {""}
@@ -243,7 +260,7 @@ function Alat(props) {
                     {isFiltered && (
                       <Col sm="12">
                         <Button color="primary" onClick={handleReset} block>
-                          Hapus Filter
+                          Hapus Pencarian
                         </Button>
                       </Col>
                     )}
@@ -314,7 +331,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     loadalat: (idlab, limit, currentPage) =>
-      dispatch(getAllAlat(idlab, limit, currentPage)),
+      dispatch(getAllAlat(idlab, limit, currentPage,"false")),
     getalat: (code) => dispatch(getAlatID(code)),
   };
 };

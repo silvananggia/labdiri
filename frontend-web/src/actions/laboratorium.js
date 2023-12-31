@@ -3,6 +3,7 @@ import {
     GET_LABORATORIUM_ID,
     GET_LABORATORIUM_CAT,
     GET_LAB_LIST,
+    GET_FILTER_LABORATORIUM,
   } from "./types";
   
   import LaboratoriumService from "../services/laboratorium.service";
@@ -22,9 +23,9 @@ import {
   };
 
   
-  export const getAllLaboratorium = (id) => async (dispatch) => {
+  export const getAllLaboratorium = (id,limit,page) => async (dispatch) => {
     try {
-      const res = await LaboratoriumService.getLaboratoriumCat(id);
+      const res = await LaboratoriumService.getLaboratoriumCat(id,limit,page);
 
       dispatch({
         type: GET_LABORATORIUM,
@@ -57,6 +58,19 @@ import {
       dispatch({
         type: GET_LABORATORIUM_CAT,
         payload: res.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  export const getFilterLaboratorium = (nama,lokasi,limit,page) => async (dispatch) => {
+    try {
+      const res = await LaboratoriumService.filterLab(nama,lokasi,limit,page);
+ 
+      dispatch({
+        type: GET_FILTER_LABORATORIUM,
+        payload: res.data.data,
       });
     } catch (err) {
       console.log(err);

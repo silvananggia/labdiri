@@ -99,13 +99,20 @@ class PeralatanController extends BaseController
     {
         $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
         $page = request('page', 1); // Get the requested page from the request
+        $random = request()->has('rand') && filter_var(request('rand'), FILTER_VALIDATE_BOOLEAN);
+
+
 
 
         if ($idlab === "all") {
-            $alat = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
-                ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
-                ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan')
-                ->paginate($perPage, ['*'], 'page', $page);
+            $query = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
+            ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+            ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan');
+            if ($random) {
+                $query->inRandomOrder();
+            }
+
+            $alat = $query->paginate($perPage, ['*'], 'page', $page);
 
         } else {
             $alat = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
@@ -152,30 +159,30 @@ class PeralatanController extends BaseController
             $alatQuery = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
                 ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
                 ->select(
-                    'peralatan.idalatelsa AS alat_id',
-                    'peralatan.satuan_kerja_id',
-                    'peralatan.kode_barang',
-                    'peralatan.nup',
-                    'peralatan.nama_barang',
-                    'peralatan.merk',
-                    'peralatan.tahun_perolehan',
-                    'peralatan.kondisi',
-                    'peralatan_detail.spesifikasi',
-                    'peralatan_detail.fungsi',
-                    'peralatan_detail.deskripsi',
-                    'peralatan_detail.fungsi',
-                    'peralatan_detail.deskripsi',
-                    'peralatan_detail.dimensi',
-                    'peralatan_detail.harga_perolehan',
-                    'peralatan_detail.keterangan',
-                    'lab.idlabelsa',
-                    'lab.nama AS nama_lab',
-                    'lab.lokasi_kawasan'
-                );
+                'peralatan.idalatelsa AS alat_id',
+                'peralatan.satuan_kerja_id',
+                'peralatan.kode_barang',
+                'peralatan.nup',
+                'peralatan.nama_barang',
+                'peralatan.merk',
+                'peralatan.tahun_perolehan',
+                'peralatan.kondisi',
+                'peralatan_detail.spesifikasi',
+                'peralatan_detail.fungsi',
+                'peralatan_detail.deskripsi',
+                'peralatan_detail.fungsi',
+                'peralatan_detail.deskripsi',
+                'peralatan_detail.dimensi',
+                'peralatan_detail.harga_perolehan',
+                'peralatan_detail.keterangan',
+                'lab.idlabelsa',
+                'lab.nama AS nama_lab',
+                'lab.lokasi_kawasan'
+            );
 
-                if ($nama) {
-                    $alatQuery->whereRaw('LOWER(peralatan.nama_barang) like ?', ["%" . strtolower($nama) . "%"]);
-                }
+            if ($nama) {
+                $alatQuery->whereRaw('LOWER(peralatan.nama_barang) like ?', ["%" . strtolower($nama) . "%"]);
+            }
 
             if ($idlab) {
                 $alatQuery->where('lab.idlabelsa', $idlab);

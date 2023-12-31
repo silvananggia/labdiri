@@ -24,7 +24,7 @@ function Home(props) {
   const idKat = "all";
 
   useEffect(() => {
-    props.loadlaboratorium(idKat);
+    props.loadlaboratorium(idKat, limit, currentPage);
     props.loadkategori();
     props.loadalat(idlab, limit, currentPage);
   }, [idKat, idlab, limit, currentPage]);
@@ -80,8 +80,8 @@ function Home(props) {
                     Array.from({ length: 4 }).map((_, index) => (
                       <CardSkeleton />
                     ))
-                  : props.laboratorium.laboratoriumlist &&
-                    props.laboratorium.laboratoriumlist
+                  : props.laboratorium.laboratoriumlist.data &&
+                    props.laboratorium.laboratoriumlist.data
                       .slice(0, 4)
                       .map((item, index) => (
                         <Col key={item.id} className="my-3">
@@ -214,14 +214,14 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadlaboratorium: (idKat) => dispatch(getAllLaboratorium(idKat)),
+    loadlaboratorium: (idKat, limit, currentPage) => dispatch(getAllLaboratorium(idKat, limit, currentPage)),
     getlaboratorium: (code) => dispatch(getLaboratoriumID(code)),
 
     loadkategori: () => dispatch(getAllKategori()),
     getkategori: (code) => dispatch(getKategoriID(code)),
 
     loadalat: (idlab, limit, currentPage) =>
-      dispatch(getAllAlat(idlab, limit, currentPage)),
+      dispatch(getAllAlat(idlab, limit, currentPage,"false")),
     getalat: (code) => dispatch(getAlatID(code)),
   };
 };

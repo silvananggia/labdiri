@@ -23,7 +23,7 @@ function alatReducer(alat = initialstate, action) {
         loading: false,
         errmessage: "",
         alatlist: action.payload,
-        alatobj: {},
+        alatobj: alat.alatobj,
       };
 
    
@@ -41,7 +41,7 @@ function alatReducer(alat = initialstate, action) {
         loading: false,
         errmessage: "",
         alatlist: action.payload,
-        alatobj: {},
+        alatobj: alat.alatobj,
       };
 
     default:
