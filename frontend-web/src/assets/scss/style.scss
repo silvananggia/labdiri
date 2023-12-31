@@ -448,9 +448,14 @@ margin: 5px 0px -10px 20px;
   background-repeat: no-repeat;
   background-size: cover;
   font-size: 1rem;
+  @media (max-width: 768px) {
+    background-position: center -150px; /* Adjust for smaller screens */
+  }
+
+  @media (max-width: 480px) {
+    background-position: center -50px; /* Further adjust for even smaller screens */
+  }
 }
-
-
 
 .footer .wrapper{
   margin: 60px 60px 20px 60px;
