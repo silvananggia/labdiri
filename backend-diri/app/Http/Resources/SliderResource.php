@@ -4,9 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\KategoriLabResource as KategoriLabResource;
 
-class LabListResource extends JsonResource
+class SliderResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,13 +14,15 @@ class LabListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
-
         return [
-            'id' => $this->idlabelsa,
-            'satuan_kerja_id' => $this->satuan_kerja_id,
-            'nama' => $this->nama,
+            'id' => $this->id,
+            'image' => asset($this->image),
+            'title' => $this->title,
+            'caption' => $this->caption,
+
 
         ];
     }
+
+
 }

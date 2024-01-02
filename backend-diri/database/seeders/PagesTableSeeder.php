@@ -19,17 +19,17 @@ class PagesTableSeeder extends Seeder
             [
                 'title' => 'Tentang Kami',
                 'slug' => 'tentang-kami',
-                'content' => 'Dalam tahap pengembangan',
+                'content' => 'Konten awal, dalam tahap pengembangan',
             ],
             [
                 'title' => 'Visi Misi',
                 'slug' => 'visi-misi',
-                'content' => 'Dalam tahap pengembangan',
+                'content' => 'Konten awal, dalam tahap pengembangan',
             ],
             [
                 'title' => 'Struktur Organisasi',
                 'slug' => 'struktur-organisasi',
-                'content' => 'Dalam tahap pengembangan',
+                'content' => 'Konten awal, dalam tahap pengembangan',
             ],
         ];
 

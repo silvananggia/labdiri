@@ -24,6 +24,7 @@ use App\Http\Controllers\API\LogbookKalibrasiController;
 use App\Http\Controllers\API\PengajuanKalibrasiController;
 use App\Http\Controllers\API\SerahTerimaController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\SliderController;
 use App\Http\Controllers\ApiController;
 
 
@@ -56,6 +57,7 @@ Route::get('getlistlab', [LabController::class, 'listLab']);
 Route::get('getlistlokasi', [LabController::class, 'listLokasi']);
 Route::get('filteralat', [PeralatanController::class, 'searchPeralatan']);
 Route::get('filterlab', [LabController::class, 'searchLab']);
+Route::get('getslider', [SliderController::class, 'index']);
 
 Route::middleware(['auth:api','role','scope:admin'])->group( function () {
     Route::post('/fetch-laboratorium-data', [ApiController::class, 'FetchLaboratoriumData']);
