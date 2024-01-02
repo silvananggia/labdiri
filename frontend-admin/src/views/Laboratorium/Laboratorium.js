@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
-import { Edit, Plus, Trash2 } from "react-feather";
+import { Edit, Plus, Trash2,Eye } from "react-feather";
 import {
   Badge,
   Label,
@@ -23,11 +23,17 @@ import "@styles/react/libs/tables/react-dataTable-component.scss";
 
 const Laboratorium = (props) => {
   const ability = useContext(AbilityContext);
-  const { user: currentUser } = useSelector((state) => state.auth.user);
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilter, setGlobalFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const pageRangeDisplayed = 3;
+
+  useEffect(() => {
+
+    props.loadlaboratorium( rowsPerPage, currentPage);
+  
+}, [ rowsPerPage, currentPage]);
+
 
   const handleDelete = (code) => {
     if (window.confirm("Anda yakin akan menghapus data tersebut?")) {
@@ -39,18 +45,16 @@ const Laboratorium = (props) => {
   const handlePerPage = (e) => {
     const selectedRowsPerPage = parseInt(e.target.value, 10);
     setRowsPerPage(selectedRowsPerPage);
-    setCurrentPage(0);
+    setLimit(selectedRowsPerPage);
+    setCurrentPage(1); 
   };
-
-  useEffect(() => {
-    props.loadLaboratorium();
-  }, []);
 
   const columns = [
     {
       name: "Laboratorium",
       selector: (row) => row.nama,
       sortable: true,
+      width: '500px',
     },
     {
       name: "Lokasi",
@@ -60,8 +64,8 @@ const Laboratorium = (props) => {
     {
       name: "Status",
       cell: (row) => (
-        <Badge pill color={row.status === "1" ? "light-success" : "light-danger"} className="me-1">
-          {row.status === "1" ? "Aktif" : "Tidak Aktif"}
+        <Badge pill color={row.status === "aktif" ? "light-success" : "light-danger"} className="me-1">
+          {row.status === "aktif" ? "Aktif" : "Tidak Aktif"}
         </Badge>
       ),
     },
@@ -69,14 +73,29 @@ const Laboratorium = (props) => {
       name: "Aksi",
       cell: (row) => (
         <div className="column-action d-flex align-items-center">
-         {ability.can("update", "laboratorium") ? (
-          <Link color="primary" to={"edit/" + row.id}>
-            <Edit className="cursor-pointer" size={17} id={`send-tooltip-${row.id}`} />
-            <UncontrolledTooltip placement="top" target={`send-tooltip-${row.id}`}>
-              Ubah
-            </UncontrolledTooltip>
-          </Link>) : null }
-          {ability.can("delete", "laboratorium") ? (
+  {ability.can("view", "laboratorium") ? (
+    <Link color="primary" to={"view/" + row.id}>
+      <Eye className="cursor-pointer" size={17} id={`view-tooltip-${row.id}`} />
+      <UncontrolledTooltip placement="top" target={`view-tooltip-${row.id}`}>
+        Lihat
+      </UncontrolledTooltip>
+    </Link>
+  ) : null}
+  
+  {ability.can("update", "laboratorium") ? (
+    <>
+      {/* Add spacing here */}
+      <span style={{ margin: '0 5px' }}></span>
+
+      <Link color="primary" to={"edit/" + row.id}>
+        <Edit className="cursor-pointer" size={17} id={`edit-tooltip-${row.id}`} />
+        <UncontrolledTooltip placement="top" target={`edit-tooltip-${row.id}`}>
+          Ubah
+        </UncontrolledTooltip>
+      </Link>
+    </>
+  ) : null}
+         {/*  {ability.can("delete", "laboratorium") ? (
           <Link
             onClick={() => {
               handleDelete(row.id);
@@ -88,52 +107,57 @@ const Laboratorium = (props) => {
             <UncontrolledTooltip placement="top" target={`pw-tooltip-${row.id}`}>
               Hapus
             </UncontrolledTooltip>
-          </Link>): null}
+          </Link>): null} */}
         </div>
       ),
     },
   ];
 
-  const filteredData = props.laboratorium.laboratoriumlist.filter((item) =>
-    item.nama.toLowerCase().includes(globalFilter.toLowerCase()) ||
-    item.kategori.nama.toLowerCase().includes(globalFilter.toLowerCase()) ||
-    item.lokasi.nama.toLowerCase().includes(globalFilter.toLowerCase()) ||
-    (item.status === "1" && "Aktif".toLowerCase().includes(globalFilter.toLowerCase())) ||
-    (item.status !== "1" && "Tidak Aktif".toLowerCase().includes(globalFilter.toLowerCase()))
-  );
 
-  const pageCount = Math.ceil(filteredData.length / rowsPerPage);
+  const paginatedData = props.laboratorium.laboratoriumlist.data || []; // Ensure to have an empty array if data is undefined
+  const pagination = props.laboratorium.laboratoriumlist.metadata;
+  const totalPages = pagination ? pagination.last_page : 0;
 
-  const paginatedData = filteredData.slice(
-    currentPage * rowsPerPage,
-    (currentPage + 1) * rowsPerPage
-  );
 
-  const handlePagination = (selectedPage) => {
-    setCurrentPage(selectedPage.selected);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [rowsPerPage]);
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setCurrentPage(1); // Reset to the first page when changing the limit
   };
 
   const CustomPagination = () => {
-    const count = Math.ceil(filteredData.length / rowsPerPage);
+    if (totalPages <= 1) {
+      return null;
+    }
 
     return (
       <ReactPaginate
-        previousLabel={""}
-        nextLabel={""}
-        breakLabel={"..."}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={2}
-        onPageChange={handlePagination}
-        activeClassName="active"
-        pageClassName="page-item"
-        breakClassName="page-item"
-        nextLinkClassName="page-link"
-        pageLinkClassName="page-link"
-        breakLinkClassName="page-link"
-        previousLinkClassName="page-link"
-        nextClassName="page-item next-item"
-        previousClassName="page-item prev-item"
+      pageCount={totalPages}
+      pageRangeDisplayed={ pageRangeDisplayed}
+      marginPagesDisplayed={2}
+      onPageChange={({ selected }) => handlePageChange(selected + 1)}
+      forcePage={currentPage - 1}
+      previousLabel={""}
+      nextLabel={""}
+      breakLabel={"..."}
+      activeClassName="active"
+      pageClassName="page-item"
+      breakClassName="page-item"
+      nextLinkClassName="page-link"
+      pageLinkClassName="page-link"
+      breakLinkClassName="page-link"
+      previousLinkClassName="page-link"
+      nextClassName="page-item next-item"
+      previousClassName="page-item prev-item"
+     
         containerClassName={
           "pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1"
         }
@@ -222,7 +246,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadLaboratorium: () => dispatch(getAllLaboratorium()),
+    loadlaboratorium: ( limit, currentPage) =>
+    dispatch(getAllLaboratorium( limit, currentPage)),
     removeLaboratorium: (code) => dispatch(deleteLaboratorium(code)),
   };
 };

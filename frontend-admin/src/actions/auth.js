@@ -19,7 +19,7 @@ import {
     } catch (error) {
       dispatch({
         type: LOGIN_FAILURE,
-        payload: error.message,
+        payload: error.response.data.error,
       });
     }
   };
@@ -36,6 +36,14 @@ import {
   };
 
   
-  export const logout = () => ({
-    type: LOGOUT,
-  });
+
+  export const logout = () => async (dispatch) => {
+    try {
+      const res = await AuthService.logout();
+      dispatch({
+       type: LOGOUT, 
+       payload: res.data });
+    } catch (error) {
+      dispatch({ type: LOGIN_FAILURE, payload: error.message });
+    }
+  };

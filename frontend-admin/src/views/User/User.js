@@ -54,6 +54,11 @@ const User = (props) => {
       selector: (row) => row.name,
       sortable: true,
     },
+    {
+      name: "Role",
+      selector: (row) => row.role,
+      sortable: true,
+    },
     /*
     {
       name: "Status",

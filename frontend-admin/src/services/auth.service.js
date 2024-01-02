@@ -29,6 +29,7 @@ const checkAuth = (id) => {
 
 const logout = () => {
     localStorage.removeItem("user");
+    return axios.post("/logout", {}, { headers: authHeader() });
 };
 
 const authService = {

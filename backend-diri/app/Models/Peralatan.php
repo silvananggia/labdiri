@@ -11,9 +11,9 @@ use App\Traits\Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\HasMedia;
-class Peralatan extends Model implements HasMedia
+class Peralatan extends Model
 {
-    use HasFactory, Uuids, InteractsWithMedia;
+    use HasFactory, Uuids;
 
     protected $table = 'peralatan';
     protected $primaryKey = 'id';
@@ -33,7 +33,11 @@ class Peralatan extends Model implements HasMedia
         'usernameintra_manajer_alat',
     ];
 
-    public function laboratorium(): BelongsTo
+    public function peralatandetail()
+    {
+    return $this->hasOne(PeralatanDetail::class, 'idalat', 'idalatelsa');
+}
+    public function lab(): BelongsTo
     {
         return $this->belongsTo(lab::class, 'satuan_kerja_id','satuan_kerja_id');
     }

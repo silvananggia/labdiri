@@ -34,7 +34,7 @@ function Alat(props) {
     dispatch(getAllAlat("all", limit, currentPage,"true"));
   }, [code, limit, currentPage]);
 
-  const alatobj = useSelector((state) => state.alat.alatobj[0]);
+  const alatobj = useSelector((state) => state.alat.alatobj);
 
   return (
     <>
@@ -66,7 +66,9 @@ function Alat(props) {
                </div>
            </div>
        </section>
-      ) : alatobj ? (
+      ) : alatobj &&
+      alatobj.images &&
+      alatobj.images.length > 0 ? (
         <>
           <div className="breadcrumb">
             <div className="wrapper">

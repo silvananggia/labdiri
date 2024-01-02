@@ -99,7 +99,7 @@ const Error = () => {
           </p>
           <Button
             tag={Link}
-            to="/"
+            to="/admin"
             color="primary"
             className="btn-sm-block mb-2"
           >

@@ -71,7 +71,7 @@ function Alat(props) {
   }, [idlab, limit, currentPage]);
 
   const paginatedData = props.alat.alatlist.data || []; // Ensure to have an empty array if data is undefined
-  const pagination = props.alat.alatlist.pagination;
+  const pagination = props.alat.alatlist.metadata;
   const totalPages = pagination ? pagination.last_page : 0;
 
   useEffect(() => {

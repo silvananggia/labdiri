@@ -30,13 +30,13 @@ const PrivateRoute = ({ children, route }) => {
       return <Navigate to="/admin/login" />;
     }
     if (user && restrictedRoute) {
-      return <Navigate to="/home" />;
+      return <Navigate to="/admin/home" />;
     }
     if (user && restrictedRoute && user.role === "public") {
-      return <Navigate to="/home-public" />;
+      return <Navigate to="/admin/home-public" />;
     }
     if (user && !ability.can(action || "read", resource)) {
-      return <Navigate to="/auth/not-auth" replace />;
+      return <Navigate to="/admin/auth/not-auth" replace />;
     }
   }
 

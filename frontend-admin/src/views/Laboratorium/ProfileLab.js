@@ -71,7 +71,7 @@ const LaboratoriumUpdate = () => {
       dispatch(getLaboratoriumID(user.laboratorium));
       console.log(user.laboratorium);
     }
-    console.log(user.role);
+  
   }, []);
 
   const laboratoriumobj = useSelector(

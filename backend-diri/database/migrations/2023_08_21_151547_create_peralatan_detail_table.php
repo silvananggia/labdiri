@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('dimensi')->nullable();
             $table->double('harga_perolehan')->nullable();
             $table->longText('keterangan')->nullable();
+            $table->string('kondisi')->nullable();
             $table->string('status_kalibrasi')->nullable();
             $table->year('tahun_kalibrasi')->nullable();
             $table->longText('link_elsa')->nullable();
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->string('sumber_tenaga')->nullable();
             $table->string('status_ketersediaan')->nullable();
             $table->string('lokasi_penyimpanan')->nullable();
+            $table->string('status');
             $table->foreign('idalat')->references('idalatelsa')->on('peralatan');
 
             $table->timestamps();

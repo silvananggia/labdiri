@@ -26,9 +26,9 @@ import {
     }
   };
   
-  export const getAllAlat = () => async (dispatch) => {
+  export const getAllAlat = (limit,page) => async (dispatch) => {
     try {
-      const res = await AlatService.getAlatAll();
+      const res = await AlatService.getAlatAll(limit,page);
 
       dispatch({
         type: GET_ALAT,
@@ -57,7 +57,7 @@ import {
       const res = await AlatService.updateAlat(id, data);
       dispatch({
         type: UPDATE_ALAT,
-        payload: data,
+        payload: res.data,
       }); 
   
       return Promise.resolve(res.data);

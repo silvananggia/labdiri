@@ -38,10 +38,17 @@ const Alat = (props) => {
   const ability = useContext(AbilityContext);
   //const user  = useSelector((state) => state.auth.user);
   const user = JSON.parse(localStorage.getItem("user"));
-console.log(user.role);
+
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [globalFilter, setGlobalFilter] = useState(""); // State for global search
-  const [currentPage, setCurrentPage] = useState(0);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageRangeDisplayed = 3;
+
+  useEffect(() => {
+
+    props.loadAlat( rowsPerPage, currentPage);
+  
+}, [ rowsPerPage, currentPage]);
 
 
   const handleDelete = (code) => {
@@ -63,7 +70,7 @@ console.log(user.role);
         props.removeAlat(code);
 
         if (user && user.role === "admin") {
-          props.loadAlat();
+          props.loadAlat( rowsPerPage, currentPage);
         } else {
           props.loadAlatLab(user.laboratorium);
         }
@@ -86,16 +93,17 @@ console.log(user.role);
   const handlePerPage = (e) => {
     const selectedRowsPerPage = parseInt(e.target.value, 10);
     setRowsPerPage(selectedRowsPerPage);
-    setCurrentPage(0);
+    setLimit(selectedRowsPerPage);
+    setCurrentPage(1); 
   };
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (user && user.role == "admin") {
       props.loadAlat();
     } else {
       props.loadAlatLab(user.laboratorium);
     }
-  }, []);
+  }, []); */
 
   const columns = [
     {
@@ -150,47 +158,52 @@ console.log(user.role);
     },
   ];
 
-  const filteredData = props.alat.alatlist.filter(
-    (item) =>
-      item.nama.toLowerCase().includes(globalFilter.toLowerCase()) ||
-      item.merk.toLowerCase().includes(globalFilter.toLowerCase()) ||
-      item.jumlah.toString().includes(globalFilter) ||
-      item.laboratorium.toLowerCase().includes(globalFilter.toLowerCase())
-  );
+  
 
-  const pageCount = Math.ceil(filteredData.length / rowsPerPage);
+  const paginatedData = props.alat.alatlist.data || []; // Ensure to have an empty array if data is undefined
+  const pagination = props.alat.alatlist.metadata;
+  const totalPages = pagination ? pagination.last_page : 0;
 
-  const paginatedData = filteredData.slice(
-    currentPage * rowsPerPage,
-    (currentPage + 1) * rowsPerPage
-  );
 
-  const handlePagination = (selectedPage) => {
-    setCurrentPage(selectedPage.selected);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
   };
 
-  // ** Custom Pagination
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [rowsPerPage]);
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setCurrentPage(1); // Reset to the first page when changing the limit
+  };
+
   const CustomPagination = () => {
-    const count = Math.ceil(filteredData.length / rowsPerPage);
+    if (totalPages <= 1) {
+      return null;
+    }
 
     return (
       <ReactPaginate
-        previousLabel={""}
-        nextLabel={""}
-        breakLabel={"..."}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={2}
-        onPageChange={handlePagination}
-        activeClassName="active"
-        pageClassName="page-item"
-        breakClassName="page-item"
-        nextLinkClassName="page-link"
-        pageLinkClassName="page-link"
-        breakLinkClassName="page-link"
-        previousLinkClassName="page-link"
-        nextClassName="page-item next-item"
-        previousClassName="page-item prev-item"
+      pageCount={totalPages}
+      pageRangeDisplayed={ pageRangeDisplayed}
+      marginPagesDisplayed={2}
+      onPageChange={({ selected }) => handlePageChange(selected + 1)}
+      forcePage={currentPage - 1}
+      previousLabel={""}
+      nextLabel={""}
+      breakLabel={"..."}
+      activeClassName="active"
+      pageClassName="page-item"
+      breakClassName="page-item"
+      nextLinkClassName="page-link"
+      pageLinkClassName="page-link"
+      breakLinkClassName="page-link"
+      previousLinkClassName="page-link"
+      nextClassName="page-item next-item"
+      previousClassName="page-item prev-item"
+     
         containerClassName={
           "pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1"
         }
@@ -198,11 +211,12 @@ console.log(user.role);
     );
   };
 
+
   return (
     <Fragment>
       <Row>
         <Col sm="12">
-          <AlatStatistics alat={props.alat} />
+        {/*   <AlatStatistics alat={props.alat} /> */}
 
           <Card>
             <CardHeader className="border-bottom">
@@ -283,7 +297,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadAlat: () => dispatch(getAllAlat()),
+    loadAlat: (limit, currentPage) => dispatch(getAllAlat(limit, currentPage)),
     loadAlatLab: (id) => dispatch(getAlatLab(id)),
     removeAlat: (code) => dispatch(deleteAlat(code)),
   };

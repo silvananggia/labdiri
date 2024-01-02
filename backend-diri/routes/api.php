@@ -68,15 +68,19 @@ Route::middleware(['auth:api','role','scope:admin'])->group( function () {
     Route::get('/peralatan', [PeralatanController::class, 'getAllPeralatan']);
     Route::get('/peralatan/{id}',  [PeralatanController::class,'getPeralatanById']);
 
+    Route::resource('laboratorium', LabController::class);
+    Route::resource('alat', PeralatanController::class);
 
     Route::resource('roles', RolesController::class);
     Route::resource('pages', PagesController::class);
     Route::resource('profile', ProfileController::class);
     Route::resource('kategorilab', KategoriLabController::class);
     Route::resource('lokasi', LokasiController::class);
-    Route::resource('laboratorium', LaboratoriumController::class);
+
     Route::resource('mitra', MitraController::class);
-    Route::resource('alat', AlatController::class);
+
 
     Route::resource('user', UserController::class);
+    Route::post('/logout', [ApiAuthController::class, 'logout']);
+
 });

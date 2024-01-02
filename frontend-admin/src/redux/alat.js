@@ -39,15 +39,14 @@ function alatReducer(alat = initialstate, action) {
           alatobj: {},
         };
 
-    case UPDATE_ALAT:
-      const _data = { ...action.payload };
-      const _finaldata = alat.alatlist.map((item) => {
-        return item.id === _data.id ? _data : item;
-      });
-      return {
-        ...alat,
-        alatlist: _finaldata,
-      };
+        case UPDATE_ALAT:
+
+          return {
+            ...alat,
+            errmessage: "",
+            alatlist: action.payload,
+            alatobj: alat.alatobj,
+          };
 
     case DELETE_ALAT:
       return {

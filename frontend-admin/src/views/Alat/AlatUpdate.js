@@ -3,8 +3,9 @@ import { useState, useEffect, Fragment, React } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // ** Third Party Components
 import Select from "react-select";
+import { useDropzone } from "react-dropzone";
 import InputNumber from "rc-input-number";
-import { Plus, Minus } from "react-feather";
+import { Plus, Minus,X,DownloadCloud, AlertCircle } from "react-feather";
 import Cleave from "cleave.js/react";
 import Flatpickr from "react-flatpickr";
 import Swal from "sweetalert2";
@@ -17,10 +18,12 @@ import { getAllLaboratorium } from "../../actions/laboratorium";
 import { updateAlat, getAlatID } from "../../actions/alat";
 // ** Reactstrap Imports
 import {
+  Alert,
   Card,
   CardHeader,
   CardTitle,
   CardBody,
+  CardText,
   Label,
   Input,
   FormText,
@@ -28,6 +31,8 @@ import {
   Col,
   Form,
   Button,
+  ListGroup,
+  ListGroupItem,
 } from "reactstrap";
 
 import { EditorState, ContentState } from "draft-js";
@@ -111,45 +116,40 @@ const LaboratoriumUpdate = () => {
     kalibrasichange(e.value);
   };
 
-  useEffect(() => {
-    dispatch(getAllLaboratorium());
-  }, []);
 
-  const listLaboratorium = useSelector(
-    (state) => state.laboratorium.laboratoriumlist
-  );
 
   const alatobj = useSelector((state) => state.alat.alatobj);
-  const labobj = useSelector((state) => state.alat.labobj);
+
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    const alatobj = {
-      idlab,
-      nama,
-      merk,
-      spesifikasi,
-      fungsi,
-      deskripsi,
-      jumlah,
-      dimensi,
-      kondisi,
-      kode_bmn,
-      tahun_perolehan,
-      harga_perolehan,
-      keterangan,
-      penanggungjawab,
-      status_kalibrasi,
-      tahun_kalibrasi,
-      link_elsa,
-      noseri,
-      sumber_tenaga,
-      status_ketersediaan,
-      lokasi_penyimpanan,
-    };
-  
+   
+    const formData = new FormData();
+    formData.append("_method", "PUT");
+    formData.append("spesifikasi", spesifikasi);
+    formData.append("fungsi", fungsi);
+    formData.append("deskripsi", deskripsi);
+    formData.append("dimensi", dimensi);
+    formData.append("kondisi", kondisi);
+    formData.append("harga_perolehan", harga_perolehan);
+    formData.append("keterangan", keterangan);
+    formData.append("status_kalibrasi", status_kalibrasi);
+    formData.append("tahun_kalibrasi", tahun_kalibrasi);
+    formData.append("link_elsa", link_elsa);
+    formData.append("noseri", noseri);
+    formData.append("sumber_tenaga", sumber_tenaga);
+    formData.append("lokasi_penyimpanan", lokasi_penyimpanan);
+    formData.append("status", status_kalibrasi); 
+
+    if (setimages.length === 0) return;
+
+    for (const image of images) {
+      formData.append("images[]", image);
+    }
+
+
     try {
-      await dispatch(updateAlat(id, alatobj));
+      await dispatch(updateAlat(id, formData));
       // Show a success message using Swal
       Swal.fire({
         icon: "success",
@@ -174,12 +174,8 @@ const LaboratoriumUpdate = () => {
   }, []);
 
   useEffect(() => {
-    if (alatobj ) {
+    if (alatobj  ) {
       idchange(alatobj.id);
-      if(labobj){      
-        setIdlab(labobj.id);
-}
-
       namachange(alatobj.nama);
       merkchange(alatobj.merk);
       spesifikasichange(alatobj.spesifikasi);
@@ -200,39 +196,98 @@ const LaboratoriumUpdate = () => {
       sumbertenagachange(alatobj.sumber_tenaga);
       statusketersediaanchange(alatobj.status_ketersediaan);
       lokasipenyimpananchange(alatobj.lokasi_penyimpanan);
+   
     }
-  }, [alatobj,labobj]);
+  }, [alatobj]);
 
+
+
+  //
+  // ** State
+  const [images, setimages] = useState([]);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: async (acceptedimages) => {
+      console.log(acceptedimages);
+      try {
+        setimages([
+          ...images,
+          ...acceptedimages.map((file) => Object.assign(file)),
+        ]);
+      } catch (error) {
+        console.error("Error handling file drop:", error);
+      }
+    },
+  });
+
+  const renderFilePreview = (file) => {
+    if (file.type.startsWith("image")) {
+      return (
+        <img
+          className="rounded"
+          alt={file.name}
+          src={URL.createObjectURL(file)}
+          height="28"
+          width="28"
+        />
+      );
+    } else {
+      return <FileText size="28" />;
+    }
+  };
+
+  const handleRemoveFile = (file) => {
+    const uploadedimages = images;
+    const filtered = uploadedimages.filter((i) => i.name !== file.name);
+    setimages([...filtered]);
+  };
+
+  const renderimagesize = (size) => {
+    if (Math.round(size / 100) / 10 > 1000) {
+      return `${(Math.round(size / 100) / 10000).toFixed(1)} mb`;
+    } else {
+      return `${(Math.round(size / 100) / 10).toFixed(1)} kb`;
+    }
+  };
+
+  const fileList = images.map((file, index) => (
+    <ListGroupItem
+      key={`${file.name}-${index}`}
+      className="d-flex align-items-center justify-content-between"
+    >
+      <div className="file-details d-flex align-items-center">
+        <div className="file-preview me-1">{renderFilePreview(file)}</div>
+        <div>
+          <p className="file-name mb-0">{file.name}</p>
+          <p className="file-size mb-0">{renderimagesize(file.size)}</p>
+        </div>
+      </div>
+      <Button
+        color="danger"
+        outline
+        size="sm"
+        className="btn-icon"
+        onClick={() => handleRemoveFile(file)}
+      >
+        <X size={14} />
+      </Button>
+    </ListGroupItem>
+  ));
+
+  const handleRemoveAllimages = () => {
+    setimages([]);
+  };
+  //
   return (
     <Fragment>
       <Card>
         <CardHeader>
-          <CardTitle tag="h4">Ubah Alat</CardTitle>
+          <CardTitle tag="h4">Alat</CardTitle>
         </CardHeader>
 
         <CardBody>
-          <Form onSubmit={handlesubmit}>
-            <Row>
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="CompanyMulti">
-                  Laboratorium
-                </Label>
-                <Select
-                  theme={selectThemeColors}
-                  className="status"
-                  classNamePrefix="Status"
-                  isClearable={false}
-                  cacheOptions
-                  defaultOptions
-                  options={listLaboratorium}
-                  value={listLaboratorium.find((obj) => obj.id === idlab)}
-                  getOptionLabel={({ nama }) => nama}
-                  getOptionValue={({ id }) => id}
-                  onInputChange={handleInputLab}
-                  onChange={handleLabChange}
-                />
-              </Col>
-            </Row>
+         
+           
             <Row>
               <Col md="6" sm="12" className="mb-1">
                 <Label className="form-label" for="namaAlat">
@@ -243,8 +298,9 @@ const LaboratoriumUpdate = () => {
                   name="nama"
                   id="namaAlat"
                   placeholder="Nama Alat"
-                  value={nama}
-                  onChange={(e) => namachange(e.target.value)}
+                  value={alatobj.nama}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
                 />
               </Col>
               <Col md="6" sm="12" className="mb-1">
@@ -256,11 +312,119 @@ const LaboratoriumUpdate = () => {
                   name="merk"
                   id="merkAlat"
                   placeholder="Merk"
-                  value={merk}
-                  onChange={(e) => merkchange(e.target.value)}
+                  value={alatobj.merk}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
+                />
+              </Col>
+              <Col md="3" sm="12" className="mb-1">
+                <Label className="form-label" for="merkAlat">
+                  Kode Barang
+                </Label>
+                <Input
+                  type="text"
+                  name="kodeBarang"
+                  id="kodeBarang"
+                  placeholder="Kode Barang"
+                  value={alatobj.kode_barang}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
+                />
+              </Col>
+              <Col md="1" sm="3" className="mb-1">
+                <Label className="form-label" for="merkAlat">
+                  NUP
+                </Label>
+                <Input
+                  type="text"
+                  name="nup"
+                  id="nup"
+                  placeholder="NUP"
+                  value={alatobj.nup}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
+                />
+              </Col>
+              <Col md="2" sm="3" className="mb-1">
+                <Label className="form-label" for="merkAlat">
+                  Tahun Perolehan
+                </Label>
+                <Input
+                  type="text"
+                  name="tahuPerolehan"
+                  id="tahunPerolehan"
+                  placeholder="Tahun Perolehan"
+                  value={alatobj.tahun_perolehan}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
                 />
               </Col>
               <Col md="6" sm="12" className="mb-1">
+                <Label className="form-label" for="merkAlat">
+                  Kondisi Alat
+                </Label>
+                <Input
+                  type="text"
+                  name="kondisi"
+                  id="kondisiAlat"
+                  placeholder="Kondisi"
+                  value={alatobj.kondisi}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
+                />
+              </Col>
+              <Col md="6" sm="12" className="mb-1">
+                <Label className="form-label" for="merkAlat">
+                  Laboratorium
+                </Label>
+                <Input
+                  type="text"
+                  name="laboratorium"
+                  id="laboratorium"
+                  placeholder="Laboratorium"
+                  value={alatobj.laboratorium}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
+                />
+              </Col>
+              <Col md="6" sm="12" className="mb-1">
+                <Label className="form-label" for="merkAlat">
+                  Lokasi
+                </Label>
+                <Input
+                  type="text"
+                  name="lokasi"
+                  id="lokasiAlat"
+                  placeholder="Lokasi"
+                  value={alatobj.lokasi_kawasan}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
+                />
+              </Col>
+              </Row>
+              <Alert color='danger' >
+        <div className='alert-body'>
+          <AlertCircle size={15} />{' '}
+          <span className='ms-1'>
+          <strong> *) </strong> Data diatas diambil dari Sistem <strong>ELSA</strong>, Jika terdapat perubahaan dapat disesuaikan melalui sistem <strong>ELSA</strong>.
+            
+          </span>
+        </div>
+      </Alert>
+             
+            </CardBody>
+              </Card>
+              <Form onSubmit={handlesubmit}>
+
+              <Card>
+        <CardHeader>
+          <CardTitle tag="h4">Detail Alat</CardTitle>
+        </CardHeader>
+        
+      <CardBody>
+              
+          <Row>
+          <Col md="6" sm="12" className="mb-1">
                 <Label className="form-label" for="spesifikasiAlat">
                   Spesifikasi
                 </Label>
@@ -273,7 +437,7 @@ const LaboratoriumUpdate = () => {
                   onChange={(e) => spesifikasichange(e.target.value)}
                 />
               </Col>
-              <Col md="6" sm="12" className="mb-1">
+          <Col md="6" sm="12" className="mb-1">
                 <Label className="form-label" for="fungsiAlat">
                   Fungsi
                 </Label>
@@ -327,32 +491,8 @@ const LaboratoriumUpdate = () => {
                 />
               </Col>
 
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="kodebmnAlat">
-                  Kode BMN
-                </Label>
-                <Input
-                  type="text"
-                  name="kodebmn"
-                  id="kodebmnAlat"
-                  placeholder="Kode BMN"
-                  value={kode_bmn}
-                  onChange={(e) => kodebmnchange(e.target.value)}
-                />
-              </Col>
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="CompanyMulti">
-                  Jumlah
-                </Label>
-                <InputNumber
-                  value={jumlah}
-                  upHandler={<Plus />}
-                  downHandler={<Minus />}
-                  className="input-lg"
-                  id="controlled-number-input"
-                  onChange={(jumlah) => setJml(jumlah)}
-                />
-              </Col>
+    
+
               <Col md="6" sm="12" className="mb-1">
                 <Label className="form-label" for="CompanyMulti">
                   Kondisi
@@ -430,32 +570,6 @@ const LaboratoriumUpdate = () => {
                 />
               </Col>
               <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="CompanyMulti">
-                  Link Elsa
-                </Label>
-                <Input
-                  type="text"
-                  name="nama"
-                  id="namaLaboratorium"
-                  placeholder="Link Elsa"
-                  value={link_elsa}
-                  onChange={(e) => linkelsachange(e.target.value)}
-                />
-              </Col>
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="CompanyMulti">
-                  Tahun Perolehan
-                </Label>
-                <Cleave
-                  className="form-control"
-                  placeholder="2020"
-                  options={options}
-                  id="date"
-                  value={tahun_perolehan}
-                  onChange={(e) => tahunperolehanchange(e.target.value)}
-                />
-              </Col>
-              <Col md="6" sm="12" className="mb-1">
                 <Label className="form-label" for="hargaperolehan">
                   Harga Perolehan
                 </Label>
@@ -468,33 +582,23 @@ const LaboratoriumUpdate = () => {
                   onChange={(e) => hargaperolehanchange(e.target.value)}
                 />
               </Col>
+              <Col md="6" sm="12" className="mb-1">
+                <Label className="form-label" for="CompanyMulti">
+                  Link Elsa
+                </Label>
+                <Input
+                  type="text"
+                  name="nama"
+                  id="namaLaboratorium"
+                  placeholder="Link Elsa"
+                  value={link_elsa}
+                  onChange={(e) => linkelsachange(e.target.value)}
+                />
+              </Col>
+             
+             
 
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="penanggungjawab">
-                  Penanggung Jawab
-                </Label>
-                <Input
-                  type="text"
-                  name="penanggungjawab"
-                  id="penanggungjawab"
-                  placeholder="Penanggung Jawab"
-                  value={penanggungjawab}
-                  onChange={(e) => penanggungjawabchange(e.target.value)}
-                />
-              </Col>
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="statusketersediaan">
-                  Ketersediaan
-                </Label>
-                <Input
-                  type="text"
-                  name="statusketersediaan"
-                  id="statusketersediaan"
-                  placeholder="Ketersediaan"
-                  value={status_ketersediaan}
-                  onChange={(e) => statusketersediaanchange(e.target.value)}
-                />
-              </Col>
+  
               <Col md="6" sm="12" className="mb-1">
                 <Label className="form-label" for="lokasipenyimpanan">
                   Lokasi Penyimpanan
@@ -508,7 +612,54 @@ const LaboratoriumUpdate = () => {
                   onChange={(e) => lokasipenyimpananchange(e.target.value)}
                 />
               </Col>
+            
+          </Row>
+           
+            </CardBody>
+         
+      </Card>
+
+      <Card>
+      <CardHeader>
+          <CardTitle tag="h4">Foto Alat</CardTitle>
+        </CardHeader>
+
+        <CardBody>
+            <Row>
+              <Col sm="12">
+              <div {...getRootProps({ className: "dropzone" })}>
+                <input {...getInputProps()} />
+                <div className="d-flex align-items-center justify-content-center flex-column">
+                  <DownloadCloud size={64} />
+                  <h5>Drop images here or click to upload</h5>
+                  <p className="text-secondary">
+                    Drop images here or click{" "}
+                    <a href="/" onClick={(e) => e.preventDefault()}>
+                      browse
+                    </a>{" "}
+                    thorough your machine
+                  </p>
+                </div>
+              </div>
+              {images.length ? (
+                <Fragment>
+                  <ListGroup className="my-2">{fileList}</ListGroup>
+                  <div className="d-flex justify-content-end">
+                    <Button
+                      className="me-1"
+                      color="danger"
+                      outline
+                      onClick={handleRemoveAllimages}
+                    >
+                      Remove All
+                    </Button>
+                  </div>
+                </Fragment>
+              ) : null}
+              </Col>
             </Row>
+            <br/>
+ 
             <Row>
               <Col sm="12">
                 <div className="d-flex">
@@ -526,9 +677,9 @@ const LaboratoriumUpdate = () => {
                 </div>
               </Col>
             </Row>
-          </Form>
-        </CardBody>
-      </Card>
+            </CardBody>
+           </Card>
+           </Form>
     </Fragment>
   );
 };

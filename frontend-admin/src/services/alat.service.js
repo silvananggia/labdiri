@@ -1,8 +1,8 @@
 import axios from "../api/axios";
 import authHeader from "./auth-header";
 
-const getAlatAll = () => {
-  return axios.get("/peralatan", { headers: authHeader() });
+const getAlatAll = (limit,page) => {
+  return axios.get(`/peralatan?limit=${limit}&page=${page}`, { headers: authHeader() });
 };
 
 const getAlatLab = (id) => {
@@ -25,8 +25,11 @@ const createAlat = (data) => {
 };
 
 const updateAlat = (id, data) => {
-
-  return axios.put(`/alat/${id}`, data, { headers: authHeader() });
+  const headers = {
+    ...authHeader(),
+    "Content-Type": "multipart/form-data",
+  };
+  return axios.post(`/alat/${id}`, data, { headers: headers });
 };
 
 const deleteAlat = (id) => {

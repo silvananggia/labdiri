@@ -5,8 +5,8 @@ const getLab = () => {
   return axios.get("/getlab", { headers: authHeader() });
 };
 
-const getLaboratoriumAll = () => {
-  return axios.get("/lab", { headers: authHeader() });
+const getLaboratoriumAll = (limit,page) => {
+  return axios.get(`/lab?limit=${limit}&page=${page}`, { headers: authHeader() });
 };
 
 const getLaboratorium = (id) => {

@@ -110,9 +110,9 @@ function Laboratorium(props) {
   }, [code, limit, currentPage]);
 
   const paginatedData = props.laboratorium.laboratoriumlist.data || []; // Ensure to have an empty array if data is undefined
-  const pagination = props.laboratorium.laboratoriumlist.pagination;
+  const pagination = props.laboratorium.laboratoriumlist.metadata;
   const totalPages = pagination ? pagination.last_page : 0;
-  console.log(paginatedData);
+
   useEffect(() => {
     setCurrentPage(1);
   }, [limit]);

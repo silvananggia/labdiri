@@ -49,15 +49,12 @@ function laboratoriumReducer(laboratorium = initialstate, action) {
       };
 
     case UPDATE_LABORATORIUM:
-      const _data = { ...action.payload };
-      const _finaldata = laboratorium.laboratoriumlist.map((item) => {
-        console.log(item.id);
-        console.log(item);
-        return item.id === _data.id ? _data : item;
-      });
+     
       return {
         ...laboratorium,
-        laboratoriumlist: _finaldata,
+        loading: false,
+        errmessage: "",
+        laboratoriumlist: action.payload,
       };
 
     case DELETE_LABORATORIUM:

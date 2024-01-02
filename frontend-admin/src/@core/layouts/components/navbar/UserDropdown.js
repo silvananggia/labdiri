@@ -27,7 +27,7 @@ import {
 // ** Default Avatar Image
 import defaultAvatar from "@src/assets/images/portrait/small/avatar-s-0.jpg";
 
-import { checkAuth } from "../../../../actions/auth";
+import { checkAuth,logout } from "../../../../actions/auth";
 import EventBus from "../../../../common/EventBus";
 
 const UserDropdown = () => {
@@ -35,14 +35,18 @@ const UserDropdown = () => {
 
   useEffect(() => {
     const xuserString = localStorage.getItem("user");
-
-    const xuser = JSON.parse(xuserString);
-    dispatch(checkAuth(xuser.ssoToken));
+if(xuserString){
+  const xuser = JSON.parse(xuserString);
+  dispatch(checkAuth(xuser.ssoToken));
+}
+   
   }, [dispatch]);
 
   const user = useSelector((state) => state.auth.user);
 
-  const logOut = useCallback(() => {}, [dispatch]);
+  const logOut = () => {
+    dispatch(logout());
+    }
 
   useEffect(() => {
     EventBus.on("logout", () => {
@@ -92,7 +96,7 @@ const UserDropdown = () => {
           <Settings size={14} className="me-75" />
           <span className="align-middle">Settings</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to="/admin/logout" onClick={logOut}>
+        <DropdownItem tag={Link} onClick={logOut}>
           <Power size={14} className="me-75" />
           <span className="align-middle">Logout</span>
         </DropdownItem>

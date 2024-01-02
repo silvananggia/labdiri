@@ -9,7 +9,7 @@ use App\Http\Resources\LokasiResource as LokasiResource;
 use App\Http\Resources\AlatResource as AlatResource;
 use App\Http\Resources\MitraResource as MitraResource;
 
-class LaboratoriumResource extends JsonResource
+class LaboratoriumDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,7 +18,6 @@ class LaboratoriumResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $labDetail = $this->labdetail ?? (object) ['status' => null];
         $defaultImageUrl = asset('images/default-laboratorium.jpg');
         $media = optional($this->labdetail)->getMedia('laboratorium') ?? collect([]);
 
@@ -29,7 +28,11 @@ class LaboratoriumResource extends JsonResource
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'lokasi_kawasan' => $this->lokasi_kawasan,
-            'status' => $labDetail->status,
+            'tusi' => $this->labdetail->tusi,
+            'posisi_strategis' => $this->labdetail->posisi_strategis,
+            'sdm' => $this->labdetail->sdm,
+
+            'status' => $this->labdetail->status,
             'kategori' =>  new KategoriLabResource($this->kategorilab),
             'images' => $media->isNotEmpty()
                 ? ImagesResource::collection($media)

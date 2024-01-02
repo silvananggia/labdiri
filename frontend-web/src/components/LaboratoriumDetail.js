@@ -46,11 +46,11 @@ function Laboratorium(props) {
   }, [code, limit, currentPage]);
 
   const laboratoriumobj = useSelector(
-    (state) => state.laboratorium.laboratoriumobj[0]
+    (state) => state.laboratorium.laboratoriumobj
   );
   const alatlist = useSelector((state) => state.alat.alatlist.data);
   const paginatedData = props.alat.alatlist.data || []; // Ensure to have an empty array if data is undefined
-  const pagination = props.alat.alatlist.pagination;
+  const pagination = props.alat.alatlist.metadata;
   const totalPages = pagination ? pagination.last_page : 0;
 
   useEffect(() => {

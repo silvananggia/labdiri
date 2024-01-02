@@ -34,7 +34,7 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import { login } from "../actions/auth";
-import { clearMessage } from "../redux/message";
+import { clearMessage, setMessage } from "../redux/message";
 
 const Login = () => {
   const { skin } = useSkin();
@@ -51,7 +51,7 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const autherror = useSelector((state) => state.auth.error);
   const { message } = useSelector((state) => state.message);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const user = useSelector((state) => state.auth.user);
@@ -114,6 +114,8 @@ const Login = () => {
     dispatch(clearMessage());
   }, [dispatch]);
 
+
+
   const initialValues = {
     username: "",
     password: "",
@@ -126,15 +128,37 @@ const Login = () => {
     captcha: Yup.string().required("This field is required!"),
   });
 
-  const handleLogin = (formValue) => {
+  const handleLogin = async (formValue) => {
     const { username, password, captcha } = formValue;
 
     if (captcha === captchaText) {
-      dispatch(login(username, password));
+      try {
+        // Dispatch the login action and handle API call
+        setLoading(true);
+        const loginResult = await dispatch(login(username, password));
 
-      localStorage.setItem("user", user);
+        // Check the result of the login action
+        if (loginResult && loginResult.type === 'LOGIN_SUCCESS') {
+          // Successful login, update localStorage or perform other actions
+          const updatedUser = useSelector((state) => state.auth.user);
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+        } else {
+          // Handle other scenarios if needed
+          dispatch(setMessage("Mohon Periksa Kembali Username dan Password Anda"));
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext("2d");
+          initializeCaptcha(ctx);
+        }
+      } catch (error) {
+        const errorMessage = error.response ? error.response.data.error : "An error occurred";
+        dispatch(setMessage(errorMessage));
+
+      } finally {
+        setLoading(false);
+      }
     } else {
-      alert("Incorrect");
+      //alert("Incorrect");
+      dispatch(setMessage("Captcha Salah"));
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
       initializeCaptcha(ctx);
@@ -261,7 +285,7 @@ const Login = () => {
             </Formik>
             <p className="text-center mt-2">
               <span className="me-25">Belum Memiliki Akun?</span>
-              <Link to="https://sso.brin.go.id/auth/register">
+              <Link to="/register">
                 <span>Daftar</span>
               </Link>
             </p>

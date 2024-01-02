@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\HasMedia;
 
-class Lab extends Model implements HasMedia
+class Lab extends Model
 {
-    use HasFactory,Uuids, InteractsWithMedia;
+    use HasFactory, Uuids;
     protected $table = 'lab';
     protected $primaryKey = 'id';
     public $incrementing = false;
@@ -32,10 +32,13 @@ class Lab extends Model implements HasMedia
         'telepon',
     ];
 
+    public function peralatan()
+    {
+        return $this->hasMany(Peralatan::class, 'satuan_kerja_id', 'satuan_kerja_id');
+    }
 
-
-    public function labDetail()
-     {
-     return $this->hasOne(LabDetail::class, 'idlab', 'id');
- }
+    public function labdetail()
+    {
+        return $this->hasOne(LabDetail::class, 'idlab', 'idlabelsa');
+    }
 }

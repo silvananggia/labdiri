@@ -46,17 +46,17 @@ const Dashboard = (props) => {
   const listLokasi = useSelector((state) => state.lokasi.lokasilist);
 
   useEffect(() => {
-    dispatch(getAllLaboratorium());
-    dispatch(getAllLokasi());
-    setTotalLaboratorium(listLaboratorium.length);
-    setTotalLokasi(listLokasi.length);
+    //dispatch(getAllLaboratorium());
+   // dispatch(getAllLokasi());
+   // setTotalLaboratorium(listLaboratorium.length);
+   // setTotalLokasi(listLokasi.length);
 
   }, []);
   
   
 
   useEffect(() => {
-    props.loadAlat();
+   // props.loadAlat();
   
   }, []);
 

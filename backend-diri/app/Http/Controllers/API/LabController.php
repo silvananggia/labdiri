@@ -13,6 +13,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\LaboratoriumResource;
+use App\Http\Resources\LaboratoriumDetailResource;
 use App\Http\Resources\LabListResource;
 use App\Http\Resources\LokasiListResource;
 
@@ -24,7 +25,7 @@ class LabController extends BaseController
         try {
 
             $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
-                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab_detail.status')
+                ->select('lab.idlabelsa', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab_detail.status')
                 ->get();
 
 
@@ -59,28 +60,15 @@ class LabController extends BaseController
             $page = request('page', 1); // Get the requested page from the request
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
-            $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
-                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
-                ->paginate($perPage, ['*'], 'page', $page);
-
+            $labs = Lab::with('labdetail')
+            ->paginate($perPage, ['*'], 'page', $page);
             // Loop through the labs and add data to lab_detail if it doesn't exist
-            foreach ($labs as $lab) {
-                if ($lab->status === null) {
-                    // If lab_detail doesn't exist, add data to lab_detail
-                    $newLabDetail = new LabDetail([
 
-                        'idlab' => $lab->lab_id, // Assuming 'idlab' is the foreign key in lab_detail
-                        'status' => 'non-aktif',
-                    ]);
-
-                    $newLabDetail->save();
-                }
-            }
 
             // return $this->sendResponse(LaboratoriumResource::collection($labs), 'Data retrieved successfully.');
             return $this->sendResponse([
                 'data' => LaboratoriumResource::collection($labs),
-                'pagination' => [
+                'metadata' => [
                     'total' => $labs->total(),
                     'per_page' => $labs->perPage(),
                     'current_page' => $labs->currentPage(),
@@ -98,17 +86,25 @@ class LabController extends BaseController
     public function getLabById($id): JsonResponse
     {
         try {
-            // Make a GET request to the API endpoint
 
-            // Retrieve all labs with their associated lab details (and create lab detail if not exist)
-            $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
-                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
-                ->where('lab.idlabelsa', $id)
-                ->get();
+            $lab = Lab::where('lab.idlabelsa', $id)->first();
 
-            // Loop through the labs and add data to lab_detail if it does
+            if (!$lab) {
+                return response()->json(['success' => false, 'message' => 'Lab not found.'], 404);
+            }
 
-            return $this->sendResponse(LaboratoriumResource::collection($labs), 'Data retrieved successfully.');
+            $labDetail = $lab->labDetail;
+            if (!$labDetail) {
+                $labDetail = $lab->labDetail()->create([
+                    'idlab' => $lab->lab_id, // Assuming 'idlab' is the foreign key in lab_detail
+                    'status' => 'non-aktif',
+                ]);
+            }
+
+            $labData = new LaboratoriumDetailResource($lab);
+
+            return $this->sendResponse($labData, 'Data retrieved successfully.');
+
 
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
@@ -122,11 +118,10 @@ class LabController extends BaseController
 
 
         if ($id === "all") {
-            $labs = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
-                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status')
+            $labs = Lab::with('labdetail')
                 ->paginate($perPage, ['*'], 'page', $page);
         } else {
-            $labs = Lab::with(['kategorilab', 'lokasi', 'alat'])->where('idkategori', $id)->get();
+            $labs = Lab::with(['kategorilab', 'labdetail', 'alat'])->where('idkategori', $id)->get();
 
         }
 
@@ -134,7 +129,7 @@ class LabController extends BaseController
 
         return $this->sendResponse([
             'data' => LaboratoriumResource::collection($labs),
-            'pagination' => [
+            'metadata' => [
                 'total' => $labs->total(),
                 'per_page' => $labs->perPage(),
                 'current_page' => $labs->currentPage(),
@@ -154,9 +149,7 @@ class LabController extends BaseController
             $nama = request('nama', null);
             $lokasi = request('lokasi', null);
 
-            $labQuery = Lab::leftJoin('lab_detail', 'lab.idlabelsa', '=', 'lab_detail.idlab')
-                ->select('lab.idlabelsa AS lab_id', 'lab.satuan_kerja_id', 'lab.lokasi_kawasan', 'lab.nama', 'lab.deskripsi', 'lab_detail.status');
-
+            $labQuery = Lab::with('labdetail');
             if ($nama) {
                 $labQuery->whereRaw('LOWER(lab.nama) like ?', ["%" . strtolower($nama) . "%"]);
             }
@@ -171,7 +164,7 @@ class LabController extends BaseController
 
             return $this->sendResponse([
                 'data' => LaboratoriumResource::collection($labs),
-                'pagination' => [
+                'metadata' => [
                     'total' => $labs->total(),
                     'per_page' => $labs->perPage(),
                     'current_page' => $labs->currentPage(),
@@ -184,4 +177,33 @@ class LabController extends BaseController
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
+    public function update(Request $request, $id)
+    {
+
+
+        $laboratorium = LabDetail::where('idlab', $id)->first();
+
+        if (!$laboratorium) {
+            return $this->sendError('LabDetail not found.', 404);
+        }
+
+        $laboratorium->idkategori = $request->idkategori;
+        $laboratorium->tusi = $request->tusi;
+        $laboratorium->posisi_strategis = $request->posisi_strategis;
+        $laboratorium->sdm = $request->sdm;
+        $laboratorium->status = $request->status;
+        $laboratorium->save();
+
+        if ($images = $request->images) {
+            $laboratorium->clearMediaCollection('laboratorium');
+            foreach ($images as $image) {
+                $laboratorium->addMedia($image)->toMediaCollection('laboratorium');
+            }
+        }
+
+
+        return $this->sendResponse(new LaboratoriumResource($laboratorium), 'Data updated successfully.');
+    }
+
 }

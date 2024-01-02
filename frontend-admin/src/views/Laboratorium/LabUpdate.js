@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 // ** Third Party Components
 import Select from "react-select";
 import { useDropzone } from "react-dropzone";
-import { Plus, Minus, FileText, X, DownloadCloud } from "react-feather";
+import { Plus, Minus, FileText, X, DownloadCloud,AlertCircle } from "react-feather";
 import Swal from "sweetalert2";
 
 // ** Utils
@@ -20,10 +20,12 @@ import {
 
 // ** Reactstrap Imports
 import {
+  Alert,
   Card,
   CardHeader,
   CardTitle,
   CardBody,
+  CardText,
   Label,
   Input,
   FormText,
@@ -44,14 +46,14 @@ import {
 import { Editor } from "react-draft-wysiwyg";
 import { convertToHTML, convertFromHTML } from "draft-convert";
 import htmlToDraft from "html-to-draftjs";
-
+import CustomEditor from "../Editor/CustomEditor";
 // ** Styles
 import "@styles/react/libs/editor/editor.scss";
 import "@styles/base/plugins/forms/form-quill-editor.scss";
 
 const statusOptions = [
-  { id: "1", value: "1", label: "Aktif" },
-  { id: "2", value: "0", label: "Tidak Aktif" },
+  { id: "1", value: "aktif", label: "Aktif" },
+  { id: "2", value: "non-aktf", label: "Tidak Aktif" },
 ];
 
 const LaboratoriumUpdate = () => {
@@ -60,38 +62,15 @@ const LaboratoriumUpdate = () => {
 
   const [id, idchange] = useState(0);
   const { code } = useParams();
-  const [inputkategori, setvaluekat] = useState("");
-  const [idkategori, setIdkategori] = useState("");
-  const [inputlokasi, setvaluelok] = useState("");
-  const [idlokasi, setIdlokasi] = useState("");
+
+  const [lokasi, setLokasi] = useState("");
+  const [desc, setDesc] = useState("");
   const [nama, namachange] = useState("");
   const [inputValue, setValue] = useState("");
   const [status, statuschange] = useState("aktif");
 
-  useEffect(() => {
-    dispatch(getAllLokasi());
-    dispatch(getAllKategori());
-  }, []);
 
-  const listLokasi = useSelector((state) => state.lokasi.lokasilist);
 
-  const handleInputLokasiChange = (value) => {
-    setvaluelok(value);
-  };
-
-  const handleLokasiChange = (value) => {
-    setIdlokasi(value.id);
-  };
-
-  const listKategori = useSelector((state) => state.kategori.kategorilist);
-
-  const handleInputKategoriChange = (value) => {
-    setvaluekat(value);
-  };
-
-  const handleKategoriChange = (value) => {
-    setIdkategori(value.id);
-  };
 
   const handleInputChange = (value) => {
     setValue(value);
@@ -104,6 +83,8 @@ const LaboratoriumUpdate = () => {
   const laboratoriumobj = useSelector(
     (state) => state.laboratorium.laboratoriumobj
   );
+
+
 
   //
   // ** State
@@ -187,11 +168,7 @@ const LaboratoriumUpdate = () => {
 
     const formData = new FormData();
     formData.append("_method", "PUT");
-    formData.append("idkategori", idkategori);
-    formData.append("idlokasi", idlokasi);
-    formData.append("nama", nama);
     formData.append("tusi", tusi);
-    formData.append("deskripsi", deskripsi);
     formData.append("posisi_strategis", posisi_strategis);
     formData.append("sdm", sdm);
     formData.append("status", status);
@@ -226,111 +203,38 @@ const LaboratoriumUpdate = () => {
   }, []);
 
   useEffect(() => {
-    if (laboratoriumobj && laboratoriumobj.kategori && laboratoriumobj.lokasi) {
+    if (laboratoriumobj ) {
       idchange(laboratoriumobj.id);
-      setIdkategori(laboratoriumobj.kategori.id);
-      setIdlokasi(laboratoriumobj.lokasi.id);
       namachange(laboratoriumobj.nama);
+      setLokasi(laboratoriumobj.lokasi_kawasan);
+      setDesc(laboratoriumobj.deskripsi);
       statuschange(laboratoriumobj.status);
+      seInitTusi(laboratoriumobj.tusi)
+      seInitPosisi(laboratoriumobj.posisi_strategis);
+      seInitSDM(laboratoriumobj.sdm)
     }
   }, [laboratoriumobj]);
 
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
+
+  const [inittusi, seInitTusi] = useState(null);
   const [tusi, setConvertedtusi] = useState(null);
 
-  const initialContent = laboratoriumobj.tusi;
-  const initialContent2 = laboratoriumobj.deskripsi;
-  const initialContent3 = laboratoriumobj.posisi_strategis;
-  const initialContent4 = laboratoriumobj.sdm;
-
-  useEffect(() => {
-    // Check if initialContent exists before creating the editorState
-    if (initialContent) {
-      const contentBlock = htmlToDraft(initialContent);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState = EditorState.createWithContent(contentState);
-      setEditorState(initialEditorState); // Set the initial editor state
-    }
-  }, [initialContent]);
-
-  const [editordeskState, setEditorDeskState] = useState(() =>
-    EditorState.createEmpty()
-  );
-  const [deskripsi, setConvertedDeskripsi] = useState(null);
-
-  useEffect(() => {
-    if (initialContent2) {
-      const contentBlock = htmlToDraft(initialContent2);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState2 = EditorState.createWithContent(contentState);
-      setEditorDeskState(initialEditorState2); // Set the initial editor state
-    }
-  }, [initialContent2]);
-
-  const [editorposisiState, setEditorPosisiState] = useState(() =>
-    EditorState.createEmpty()
-  );
+  const [initposisi, seInitPosisi] = useState(null);
   const [posisi_strategis, setConvertedPosisi] = useState(null);
 
-  useEffect(() => {
-    if (initialContent3) {
-      const contentBlock = htmlToDraft(initialContent3);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState3 = EditorState.createWithContent(contentState);
-      setEditorPosisiState(initialEditorState3); // Set the initial editor state
-    }
-  }, [initialContent3]);
 
-  const [editorsdmState, setEditorSdmState] = useState(() =>
-    EditorState.createEmpty()
-  );
+  const [initsdm, seInitSDM] = useState(null);
   const [sdm, setConvertedSdm] = useState(null);
 
-  useEffect(() => {
-    if (initialContent4) {
-      const contentBlock = htmlToDraft(initialContent4);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState4 = EditorState.createWithContent(contentState);
-      setEditorSdmState(initialEditorState4); // Set the initial editor state
-    }
-  }, [initialContent3]);
 
-  useEffect(() => {
-    let html = convertToHTML(editorState.getCurrentContent());
-    setConvertedtusi(html);
-  }, [editorState]);
 
-  useEffect(() => {
-    let html = convertToHTML(editordeskState.getCurrentContent());
-    setConvertedDeskripsi(html);
-  }, [editordeskState]);
-
-  useEffect(() => {
-    let html = convertToHTML(editorposisiState.getCurrentContent());
-    setConvertedPosisi(html);
-  }, [editorposisiState]);
-
-  useEffect(() => {
-    let html = convertToHTML(editorsdmState.getCurrentContent());
-    setConvertedSdm(html);
-  }, [editorsdmState]);
 
   return (
     <Fragment>
       <Form onSubmit={handlesubmit}>
         <Card>
           <CardHeader>
-            <CardTitle tag="h4">Tambah Laboratorium</CardTitle>
+            <CardTitle tag="h4">Laboratorium</CardTitle>
           </CardHeader>
 
           <CardBody>
@@ -345,100 +249,90 @@ const LaboratoriumUpdate = () => {
                   id="namaLaboratorium"
                   placeholder="Nama Laboratorium"
                   value={nama}
-                  onChange={(e) => namachange(e.target.value)}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
+                />
+              </Col>
+              <Col md="6" sm="12" className="mb-1">
+                <Label className="form-label" for="namaLaboratorium">
+                  Lokasi
+                </Label>
+                <Input
+                  type="text"
+                  name="lokasi"
+                  id="namaLaboratorium"
+                  value={lokasi}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
                 />
               </Col>
             </Row>
             <Row>
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="CompanyMulti">
-                  Kategori Laboratorium
+              
+              <Col md="12" sm="12" className="mb-1">
+                <Label className="form-label" for="namaLaboratorium">
+                  Deskripsi
                 </Label>
-                <Select
-                  theme={selectThemeColors}
-                  className="status"
-                  classNamePrefix="Status"
-                  isClearable={false}
-                  cacheOptions
-                  defaultOptions
-                  options={listKategori} // Since the list is provided by the store, provide it directly
-                  value={listKategori.find((obj) => obj.id === idkategori)}
-                  getOptionLabel={({ nama }) => nama}
-                  getOptionValue={({ id }) => id}
-                  onInputChange={handleInputKategoriChange}
-                  onChange={handleKategoriChange}
-                />
-              </Col>
-              <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="CompanyMulti">
-                  Lokasi Laboratorium
-                </Label>
-                <Select
-                  theme={selectThemeColors}
-                  className="status"
-                  classNamePrefix="Status"
-                  isClearable={false}
-                  cacheOptions
-                  defaultOptions
-                  options={listLokasi}
-                  value={listLokasi.find((obj) => obj.id === idlokasi)}
-                  getOptionLabel={({ nama }) => nama}
-                  getOptionValue={({ id }) => id}
-                  onInputChange={handleInputLokasiChange}
-                  onChange={handleLokasiChange}
+                <Input
+                  type="textarea"
+                  name="lokasi"
+                  id="namaLaboratorium"
+                  value={desc}
+                  disabled
+                  style={{ backgroundColor: '#f0f0f0', color: '#666' }}
                 />
               </Col>
             </Row>
+            <Alert color='danger' >
+        <div className='alert-body'>
+          <AlertCircle size={15} />{' '}
+          <span className='ms-1'>
+          <strong> *) </strong> Data diatas diambil dari Sistem <strong>ELSA</strong>, Jika terdapat perubahaan dapat disesuaikan melalui sistem <strong>ELSA</strong>.
+            
+          </span>
+        </div>
+      </Alert>
+            </CardBody>
+         
+            </Card>
+            <Card>
+          <CardHeader>
+            <CardTitle tag="h4">Detail Laboratorium</CardTitle>
+          </CardHeader>
+
+          <CardBody>
             <Row>
               <Col sm="12" className="mb-1">
                 <Label className="form-label" for="keteranganLokasi">
                   Tugas & Fungsi
                 </Label>
-
-                <Editor
-                  editorState={editorState}
-                  onEditorStateChange={setEditorState}
-                  wrapperClassName="wrapper-class"
-                  editorClassName="editor-class"
-                  toolbarClassName="toolbar-class"
+                <CustomEditor
+                  initialContent={inittusi}
+                  onEditorStateChange={(html) => setConvertedtusi(html)}
                 />
               </Col>
+              
               <Col sm="12" className="mb-1">
-                <Label className="form-label" for="latitudeLokasi">
-                  Deskripsi
+                <Label className="form-label" for="keteranganLokasi">
+                 Posisi Strategis
                 </Label>
-                <Editor
-                  editorState={editordeskState}
-                  onEditorStateChange={setEditorDeskState}
-                  wrapperClassName="wrapper-class"
-                  editorClassName="editor-class"
-                  toolbarClassName="toolbar-class"
+                <CustomEditor
+                  initialContent={initposisi}
+                  onEditorStateChange={(html) => setConvertedPosisi(html)}
                 />
               </Col>
+              
               <Col sm="12" className="mb-1">
-                <Label className="form-label" for="latitudeLokasi">
-                  Posisi Strategis
-                </Label>
-                <Editor
-                  editorState={editorposisiState}
-                  onEditorStateChange={setEditorPosisiState}
-                  wrapperClassName="wrapper-class"
-                  editorClassName="editor-class"
-                  toolbarClassName="toolbar-class"
-                />
-              </Col>
-              <Col sm="12" className="mb-1">
-                <Label className="form-label" for="longitudeLokasi">
+                <Label className="form-label" for="keteranganLokasi">
                   SDM
                 </Label>
-                <Editor
-                  editorState={editorsdmState}
-                  onEditorStateChange={setEditorSdmState}
-                  wrapperClassName="wrapper-class"
-                  editorClassName="editor-class"
-                  toolbarClassName="toolbar-class"
+                <CustomEditor
+                  initialContent={initsdm}
+                  onEditorStateChange={(html) => setConvertedSdm(html)}
                 />
               </Col>
+              
+            
               <Col md="6" sm="12" className="mb-1">
                 <Label className="form-label" for="CompanyMulti">
                   Status
@@ -471,13 +365,13 @@ const LaboratoriumUpdate = () => {
                   <input {...getInputProps()} />
                   <div className="d-flex align-items-center justify-content-center flex-column">
                     <DownloadCloud size={64} />
-                    <h5>Drop images here or click to upload</h5>
+                    <h5>Masukan Foto Laboratorium</h5>
                     <p className="text-secondary">
-                      Drop images here or click{" "}
+                    Drop foto laboratorium disni atau klik{" "}
                       <a href="/" onClick={(e) => e.preventDefault()}>
                         browse
                       </a>{" "}
-                      thorough your machine
+                      untuk mengambil foto dari perangkat anda
                     </p>
                   </div>
                 </div>

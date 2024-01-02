@@ -8,6 +8,8 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
 use App\Models\Roles;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Passport\RefreshToken;
+use Laravel\Passport\Token;
 
 class ApiAuthController extends BaseController
 {
@@ -97,6 +99,14 @@ class ApiAuthController extends BaseController
             // Handle the exception (log, return an error response, etc.)
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        $user = Auth::user()->token();
+        $user->revoke();
+
+        return response()->json(['message' => 'User logged out successfully']);
     }
 
 

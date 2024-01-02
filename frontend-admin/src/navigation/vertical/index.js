@@ -59,7 +59,7 @@ export default [
     resource: 'setting',
     icon: <Settings size={20} />,
     children: [
-      {
+    /*   {
         id: "kategori",
         title: "Kategori Lab",
         action: 'read',
@@ -74,7 +74,7 @@ export default [
         resource: 'lokasi',
         icon: <Circle size={12}/>,
         navLink: "/admin/lokasi",
-      },
+      }, */
       {
         id: "laboratorium",
         title: "Laboratorium",

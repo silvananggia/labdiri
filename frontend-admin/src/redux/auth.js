@@ -1,5 +1,5 @@
 // reducers/authReducer.js
-import { LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT , CHECK_AUTH} from '../actions/types';
+import { LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT  , CHECK_AUTH} from '../actions/types';
 
 const initialState = {
   isAuthenticated: false,

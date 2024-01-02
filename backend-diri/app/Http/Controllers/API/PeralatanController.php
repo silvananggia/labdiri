@@ -8,6 +8,7 @@ use App\Http\Controllers\Str;
 use App\Models\User;
 use App\Models\Peralatan;
 use App\Models\PeralatanDetail;
+use App\Models\Lab;
 
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Support\Facades\Validator;
@@ -20,76 +21,62 @@ class PeralatanController extends BaseController
     public function getAllPeralatan(): JsonResponse
     {
         try {
+            $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
+            $page = request('page', 1); // Get the requested page from the request
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
-            $peralatans = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
+            $alat = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
                 ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
-                ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan')
-                ->limit(10)
-                ->get();
-            /*
-                        // Loop through the labs and add data to lab_detail if it doesn't exist
-                        foreach ($peralatans as $peralatan) {
-                            // Check if lab_detail doesn't exist for the current equipment
-                            if ($peralatan->status_ketersediaan === null) {
-                                // If lab_detail doesn't exist, add data to lab_detail
-                                $newLabDetail = new PeralatanDetail([
-                                    'idalat' => $peralatan->alat_id, // Assuming 'idalat' is the foreign key in peralatan_detail
-                                    'status_ketersediaan' => 'non-aktif', // Adjusted field name based on the select statement
-                                    // Add other fields if needed
-                                ]);
+                ->select('peralatan.idalatelsa', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan')
+                ->paginate($perPage, ['*'], 'page', $page);
 
-                                // Check if the checksum exists before saving
-                                $existingChecksum = PeralatanDetail::where('idalat', $peralatan->alat_id)->pluck('checksum')->first();
-
-                                if (!$existingChecksum) {
-                                    // If checksum doesn't exist, generate and add it
-                                    $newLabDetail->checksum = md5(serialize($newLabDetail->toArray())); // Example checksum calculation, adjust based on your needs
-                                    $newLabDetail->save();
-                                }
-                            }
-                        } */
-            return $this->sendResponse(AlatResource::collection($peralatans), 'Data retrieved successfully.');
+            return $this->sendResponse([
+                'data' => AlatResource::collection($alat),
+                'metadata' => [
+                    'total' => $alat->total(),
+                    'per_page' => $alat->perPage(),
+                    'current_page' => $alat->currentPage(),
+                    'last_page' => $alat->lastPage(),
+                    'from' => $alat->firstItem(),
+                    'to' => $alat->lastItem(),
+                ],
+            ], 'Data retrieved successfully.');
 
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
 
-    public function getPeralatanById($id)
+    public function getPeralatanById($id): JsonResponse
     {
         try {
             // Make a GET request to the API endpoint
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
-            $peralatans = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
+            $peralatan = Peralatan::where('peralatan.idalatelsa', $id)
                 ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
-                ->select(
-                    'peralatan.idalatelsa AS alat_id',
-                    'peralatan.satuan_kerja_id',
-                    'peralatan.kode_barang',
-                    'peralatan.nup',
-                    'peralatan.nama_barang',
-                    'peralatan.merk',
-                    'peralatan.tahun_perolehan',
-                    'peralatan.kondisi',
-                    'peralatan_detail.spesifikasi',
-                    'peralatan_detail.fungsi',
-                    'peralatan_detail.deskripsi',
-                    'peralatan_detail.fungsi',
-                    'peralatan_detail.deskripsi',
-                    'peralatan_detail.dimensi',
-                    'peralatan_detail.harga_perolehan',
-                    'peralatan_detail.keterangan',
-                    'lab.nama AS nama_lab',
-                    'lab.lokasi_kawasan')
-                ->where('peralatan.idalatelsa', $id)
+                ->first(['peralatan.*', 'lab.nama AS nama_lab',
+                    'lab.lokasi_kawasan']);
 
-                ->get();
+            if (!$peralatan) {
+                return response()->json(['success' => false, 'message' => 'Alat not found.'], 404);
+            }
 
-            // Loop through the labs and add data to lab_detail if it does
+            $peralatanDetail = $peralatan->peralatanDetail;
 
-            return $this->sendResponse(AlatDetailResource::collection($peralatans), 'Data retrieved successfully.');
+            if (!$peralatanDetail) {
+                // Assuming 'idlab' is the foreign key in peralatandetail
+                $peralatanDetail = $peralatan->peralatanDetail()->create([
+                    'idalat' => $peralatan->idalatelsa,
+                    'status' => "non-aktif",
+
+                    // Add other fields as needed
+                ]);
+            }
+
+            $peralatanData = new AlatDetailResource($peralatan);
+            return $this->sendResponse($peralatanData, 'Data retrieved successfully.');
+
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
@@ -105,9 +92,9 @@ class PeralatanController extends BaseController
 
 
         if ($idlab === "all") {
-            $query = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
-            ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
-            ->select('peralatan.idalatelsa AS alat_id', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan');
+            $query = Peralatan::with('peralatandetail')
+                ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
+                ->select('peralatan.*', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan');
             if ($random) {
                 $query->inRandomOrder();
             }
@@ -136,7 +123,7 @@ class PeralatanController extends BaseController
         // return response()->json(['success' => true, 'data' => $alat]);
         return $this->sendResponse([
             'data' => AlatResource::collection($alat),
-            'pagination' => [
+            'metadata' => [
                 'total' => $alat->total(),
                 'per_page' => $alat->perPage(),
                 'current_page' => $alat->currentPage(),
@@ -159,26 +146,26 @@ class PeralatanController extends BaseController
             $alatQuery = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
                 ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
                 ->select(
-                'peralatan.idalatelsa AS alat_id',
-                'peralatan.satuan_kerja_id',
-                'peralatan.kode_barang',
-                'peralatan.nup',
-                'peralatan.nama_barang',
-                'peralatan.merk',
-                'peralatan.tahun_perolehan',
-                'peralatan.kondisi',
-                'peralatan_detail.spesifikasi',
-                'peralatan_detail.fungsi',
-                'peralatan_detail.deskripsi',
-                'peralatan_detail.fungsi',
-                'peralatan_detail.deskripsi',
-                'peralatan_detail.dimensi',
-                'peralatan_detail.harga_perolehan',
-                'peralatan_detail.keterangan',
-                'lab.idlabelsa',
-                'lab.nama AS nama_lab',
-                'lab.lokasi_kawasan'
-            );
+                    'peralatan.idalatelsa AS alat_id',
+                    'peralatan.satuan_kerja_id',
+                    'peralatan.kode_barang',
+                    'peralatan.nup',
+                    'peralatan.nama_barang',
+                    'peralatan.merk',
+                    'peralatan.tahun_perolehan',
+                    'peralatan.kondisi',
+                    'peralatan_detail.spesifikasi',
+                    'peralatan_detail.fungsi',
+                    'peralatan_detail.deskripsi',
+                    'peralatan_detail.fungsi',
+                    'peralatan_detail.deskripsi',
+                    'peralatan_detail.dimensi',
+                    'peralatan_detail.harga_perolehan',
+                    'peralatan_detail.keterangan',
+                    'lab.idlabelsa',
+                    'lab.nama AS nama_lab',
+                    'lab.lokasi_kawasan'
+                );
 
             if ($nama) {
                 $alatQuery->whereRaw('LOWER(peralatan.nama_barang) like ?', ["%" . strtolower($nama) . "%"]);
@@ -198,7 +185,7 @@ class PeralatanController extends BaseController
 
             return $this->sendResponse([
                 'data' => AlatResource::collection($alat),
-                'pagination' => [
+                'metadata' => [
                     'total' => $alat->total(),
                     'per_page' => $alat->perPage(),
                     'current_page' => $alat->currentPage(),
@@ -210,5 +197,44 @@ class PeralatanController extends BaseController
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $alat = PeralatanDetail::where('idalat', $id)->first();
+
+            if (!$alat) {
+                return $this->sendError('LabDetail not found.', 404);
+            }
+
+            $alat->spesifikasi = $request->spesifikasi;
+            $alat->fungsi = $request->fungsi;
+            $alat->deskripsi = $request->deskripsi;
+            $alat->dimensi = $request->dimensi;
+            $alat->kondisi = $request->kondisi;
+            $alat->keterangan = $request->keterangan;
+            $alat->link_elsa = $request->link_elsa;
+            $alat->noseri = $request->noseri;
+            $alat->sumber_tenaga = $request->sumber_tenaga;
+            $alat->lokasi_penyimpanan = $request->lokasi_penyimpanan;
+
+            $alat->save();
+
+
+            if ($images = $request->images) {
+                $alat->clearMediaCollection('alat');
+                foreach ($images as $image) {
+                    $alat->addMedia($image)->toMediaCollection('alat');
+                }
+            }
+
+            //dd($alat);
+            return $this->sendResponse(new AlatResource($alat), 'Data updated successfully.');
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+
+
     }
 }

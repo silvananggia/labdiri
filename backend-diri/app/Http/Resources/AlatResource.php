@@ -17,10 +17,11 @@ class AlatResource extends JsonResource
     public function toArray(Request $request): array
     {
         $defaultImageUrl = asset('images/default-alat.jpg');
-        $media = $this->getMedia('alat');
+        $media = optional($this->peralatandetail)->getMedia('alat') ?? collect([]);
+
 
         return [
-            'id' => $this->alat_id,
+            'id' => $this->idalatelsa,
             'nama' => $this->nama_barang,
             'merk' => $this->merk,
             'spesifikasi' => $this->spesifikasi,

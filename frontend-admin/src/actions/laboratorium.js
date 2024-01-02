@@ -26,9 +26,9 @@ import {
     }
   };
   
-  export const getAllLaboratorium = () => async (dispatch) => {
+  export const getAllLaboratorium = (limit,page) => async (dispatch) => {
     try {
-      const res = await LaboratoriumService.getLaboratoriumAll();
+      const res = await LaboratoriumService.getLaboratoriumAll(limit,page);
 
       dispatch({
         type: GET_LABORATORIUM,
@@ -59,7 +59,7 @@ import {
       const res = await LaboratoriumService.updateLaboratorium(id, data);
       dispatch({
         type: UPDATE_LABORATORIUM,
-        payload: data,
+        payload: res.data,
       }); 
   
       return Promise.resolve(res.data);
