@@ -23,27 +23,20 @@ import decorationLeft from "@src/assets/images/elements/decore-left.png";
 import decorationRight from "@src/assets/images/elements/decore-right.png";
 import medal from "@src/assets/images/illustration/badge.svg";
 
-import AlatStatistics from "./Card/CardAlat";
+//import AlatStatistics from "./Card/CardAlat";
 import { getAllAlat } from "../actions/alat";
 import { getAllLaboratorium } from "../actions/laboratorium";
 import { getAllLokasi } from "../actions/lokasi";
 
 const Dashboard = (props) => {
-  const dispatch = useDispatch();
   //const user = JSON.parse(localStorage.getItem("user"));
   const user= useSelector((state) => state.auth.user);
   const ability = useContext(AbilityContext);
   const [totalLokasi, setTotalLokasi] = useState(0);
   const [totalLaboratorium, setTotalLaboratorium] = useState(0);
-  
-  const listLaboratorium = useSelector(
-    (state) => state.laboratorium.laboratoriumlist
-  );
-  const matchingLaboratorium = listLaboratorium.find(
-    (item) => item.id === user.laboratorium
-  );
 
-  const listLokasi = useSelector((state) => state.lokasi.lokasilist);
+
+
 
   useEffect(() => {
     //dispatch(getAllLaboratorium());
@@ -169,7 +162,7 @@ const Dashboard = (props) => {
       </Row>
       <Row className="match-height">
         <Col lg="12" sm="6">
-          <AlatStatistics alat={props.alat} />
+         {/*  <AlatStatistics alat={props.alat} /> */}
         </Col>
       </Row>
     </div>

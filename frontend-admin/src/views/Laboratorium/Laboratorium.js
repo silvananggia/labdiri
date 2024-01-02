@@ -172,13 +172,13 @@ const Laboratorium = (props) => {
           <Card>
             <CardHeader className="border-bottom">
               <CardTitle tag="h4">Laboratorium</CardTitle>
-              <div className="d-flex mt-md-0 mt-1">
+             {/*  <div className="d-flex mt-md-0 mt-1">
               {ability.can("add", "laboratorium") ? (
                 <Link className="ms-2" color="primary" to={"add"}>
                   <Plus size={15} />
                   <span className="align-middle ms-50">Tambah</span>
                 </Link>) : null}
-              </div>
+              </div> */}
             </CardHeader>
             <Row className="mx-0 mt-1 mb-50">
               <Col sm="6">

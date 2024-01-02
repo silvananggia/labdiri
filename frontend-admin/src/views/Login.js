@@ -33,7 +33,7 @@ import "@styles/react/pages/page-authentication.scss";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import { login } from "../actions/auth";
+import { login, checkAuth } from "../actions/auth";
 import { clearMessage, setMessage } from "../redux/message";
 
 const Login = () => {
@@ -51,7 +51,6 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const autherror = useSelector((state) => state.auth.error);
   const { message } = useSelector((state) => state.message);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const user = useSelector((state) => state.auth.user);
@@ -59,6 +58,13 @@ const Login = () => {
   const [userInput, setUserInput] = useState("");
   const canvasRef = useRef(null);
 
+  useEffect(() => {
+    // Use the navigate hook inside the useEffect
+    if (isAuthenticated) {
+      navigate("/admin/home");
+    }
+  }, [isAuthenticated, navigate]);
+  
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -165,9 +171,7 @@ const Login = () => {
     }
   };
 
-  if (isAuthenticated) {
-    navigate("/admin/home");
-  }
+ 
 
   return (
     <div className="auth-wrapper auth-cover">
