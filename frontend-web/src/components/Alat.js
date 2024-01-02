@@ -137,9 +137,12 @@ function Alat(props) {
     setIsLoading(true); // Set loading state to true
 
     try {
+     
+
       await dispatch(getFilterAlat(fidlab, fnama, flokasi, limit, currentPage));
       setIsFiltered(true);
     } catch (error) {
+     
       console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false); // Reset loading state regardless of success or failure

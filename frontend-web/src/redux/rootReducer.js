@@ -5,6 +5,7 @@ import laboratorium from "./laboratorium"
 import alat from "./alat"
 import page from "./page"
 import filter from "./filter"
+import slider from "./slider"
 
 
 
@@ -15,6 +16,7 @@ const rootReducer = {
   alat,
   page,
   filter,
+  slider,
   
 };
 

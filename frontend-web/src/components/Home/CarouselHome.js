@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
+import { Link, useNavigate } from "react-router-dom";
+import { connect, useDispatch } from "react-redux";
 import {
   Carousel,
   CarouselItem,
@@ -7,27 +9,7 @@ import {
   CarouselCaption
 } from 'reactstrap';
 import './CarouselHome.scss';
-
-const items = [
-  {
-    altText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla feugiat finibus mauris, interdum euismod lacus cursus in. Quisque elit est, consequat fermentum orci vitae, mollis convallis lorem. Morbi tincidunt ac felis et bibendum. Praesent nec accumsan metus. Vestibulum rutrum tincidunt erat. Curabitur magna sem, ultricies non ultricies ac, dignissim in risus.',
-    caption: 'Direktorat Pengelolaan Lab, Fasilitas Riset dan Kawasan Sains Teknologi',
-    key: 1,
-    src: "https://minio.brin.go.id/website//uploads/images/slider/2023/06/1686802440-30469990.webp"
-  },
-  {
-    altText: 'Slide 2',
-    caption: 'Direktorat Pengelolaan Lab, Fasilitas Riset dan Kawasan Sains Teknologi',
-    key: 2,
-    src: 'https://minio.brin.go.id/website//uploads/images/slider/2023/06/1686884413-23615416.webp'
-  },
-  {
-    altText: 'Slide 3',
-    caption: 'Direktorat Pengelolaan Lab, Fasilitas Riset dan Kawasan Sains Teknologi',
-    key: 3,
-    src: 'https://minio.brin.go.id/website//uploads/images/slider/2023/03/1679389081-57282369.webp'
-  }
-];
+import { getSlider } from "../../actions/slider";
 
 class CarouselHome extends Component {
   constructor(props) {
@@ -40,6 +22,11 @@ class CarouselHome extends Component {
     this.onExited = this.onExited.bind(this);
   }
 
+  componentDidMount() {
+    // Dispatch an action to fetch slider data from the database
+    this.props.getSlider();
+  }
+
   onExiting() {
     this.animating = true;
   }
@@ -49,14 +36,14 @@ class CarouselHome extends Component {
   }
 
   next() {
-    if (this.animating) return;
-    const nextIndex = this.state.activeIndex === items.length - 1 ? 0 : this.state.activeIndex + 1;
+    if (this.state.animating) return;
+    const nextIndex = this.state.activeIndex === this.props.items.length - 1 ? 0 : this.state.activeIndex + 1;
     this.setState({ activeIndex: nextIndex });
   }
 
   previous() {
-    if (this.animating) return;
-    const nextIndex = this.state.activeIndex === 0 ? items.length - 1 : this.state.activeIndex - 1;
+    if (this.state.animating) return;
+    const nextIndex = this.state.activeIndex === 0 ? this.props.items.length - 1 : this.state.activeIndex - 1;
     this.setState({ activeIndex: nextIndex });
   }
 
@@ -67,24 +54,24 @@ class CarouselHome extends Component {
 
   render() {
     const { activeIndex } = this.state;
-
+ const { items } = this.props;
     const slides = items.map((item) => {
       return (
         <CarouselItem
           className="custom-tag drk"
           tag="div"
-          key={item.key}
+          key={item.id}
           onExiting={this.onExiting}
           onExited={this.onExited}
         >
           <img
-            src={item.src}
-            alt={item.altText}
+            src={item.image}
+            alt={item.titile}
             className="carousel-image"
           />
            <CarouselCaption
-            captionText={item.altText}
-            captionHeader={item.caption}
+            captionText={item.caption}
+            captionHeader={item.title}
             className="custom-caption d-block"
           />
           
@@ -109,4 +96,12 @@ class CarouselHome extends Component {
   }
 }
 
-export default CarouselHome;
+const mapStateToProps = (state) => ({
+  items: state.slider.sliderlist // Assuming your Redux state has a slice named 'slider' with an 'items' property
+});
+
+const mapDispatchToProps = {
+  getSlider
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CarouselHome);

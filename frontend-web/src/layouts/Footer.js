@@ -37,7 +37,7 @@ Email: dit-plfrkst@brin.go.id</p>
         </Row>
       </div>
       <div className="bottom">
-        <p className="smText">Copyright © 2023 BRIN</p>
+        <p className="smText">Copyright ©  {new Date().getFullYear()} BRIN</p>
       </div>
     </footer>
   );

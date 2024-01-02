@@ -14,4 +14,5 @@ export const GET_ALAT_ID = "GET_ALAT_ID";
 export const GET_FILTER_ALAT = "GET_FILTER_ALAT";
 
 export const GET_PAGE = "GET_PAGE";
+export const GET_SLIDER = "GET_SLIDER";
 
