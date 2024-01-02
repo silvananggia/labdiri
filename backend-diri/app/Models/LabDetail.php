@@ -27,10 +27,7 @@ class LabDetail extends Model implements HasMedia
     {
         return $this->hasOne(lab::class, 'idlabelsa','idlab');
     }
-    public function kategorilab(): HasOne
-    {
-        return $this->hasOne(kategorilab::class, 'id','idkategori');
-    }
+
 
 
     public function mitra(): HasMany

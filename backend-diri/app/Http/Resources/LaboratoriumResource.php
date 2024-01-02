@@ -30,7 +30,7 @@ class LaboratoriumResource extends JsonResource
             'deskripsi' => $this->deskripsi,
             'lokasi_kawasan' => $this->lokasi_kawasan,
             'status' => $labDetail->status,
-            'kategori' =>  new KategoriLabResource($this->kategorilab),
+           // 'kategori' =>  new KategoriLabResource($this->kategorilab),
             'images' => $media->isNotEmpty()
                 ? ImagesResource::collection($media)
              : [['url' => $defaultImageUrl]]
