@@ -1,6 +1,6 @@
 import React, { useContext,useState, useEffect, useCallback } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
-import { Edit, Plus, Trash2, Award, MapPin, Thermometer } from "react-feather";
+import { Edit, Plus, Trash2, Award, Tool,MapPin, Thermometer } from "react-feather";
 
 // ** Custom Components
 import Avatar from "@components/avatar";
@@ -24,11 +24,10 @@ import decorationRight from "@src/assets/images/elements/decore-right.png";
 import medal from "@src/assets/images/illustration/badge.svg";
 
 //import AlatStatistics from "./Card/CardAlat";
-import { getAllAlat } from "../actions/alat";
-import { getAllLaboratorium } from "../actions/laboratorium";
-import { getAllLokasi } from "../actions/lokasi";
+import { getDashboard } from "../actions/dashboard";
 
 const Dashboard = (props) => {
+  const dispatch = useDispatch();
   //const user = JSON.parse(localStorage.getItem("user"));
   const user= useSelector((state) => state.auth.user);
   const ability = useContext(AbilityContext);
@@ -39,19 +38,12 @@ const Dashboard = (props) => {
 
 
   useEffect(() => {
-    //dispatch(getAllLaboratorium());
-   // dispatch(getAllLokasi());
-   // setTotalLaboratorium(listLaboratorium.length);
-   // setTotalLokasi(listLokasi.length);
+    dispatch(getDashboard());
 
   }, []);
-  
-  
 
-  useEffect(() => {
-   // props.loadAlat();
-  
-  }, []);
+  const dataDashboard = useSelector((state) => state.dashboard.dashborddata);
+
 
   return (
     <div id="dashboard-ecommerce">
@@ -100,7 +92,7 @@ const Dashboard = (props) => {
                  Total
                 </CardText>
                 <h1 className="mb-75 mt-2 pt-50">
-                {totalLaboratorium}
+                {dataDashboard && dataDashboard.total_labs}
                 </h1>
                 
               </Col>
@@ -124,6 +116,42 @@ const Dashboard = (props) => {
         </Card>
       </Col>
       ):null}
+      {ability.can("view", "laboratorium") ? (
+        
+        <Col lg="3" sm="6">
+        <Card className="card-congratulations-medal">
+          <CardBody>
+            <Row>
+              <Col>
+                <h5>Alat</h5>
+                <CardText className="font-small-3">
+                 Total
+                </CardText>
+                <h1 className="mb-75 mt-2 pt-50">
+                {dataDashboard && dataDashboard.total_peralatan}
+                </h1>
+                
+              </Col>
+              <Col className="mb-2">
+                <div className="d-flex align-items-center">
+                  <Avatar
+                    icon={<Tool size={28} />}
+                    className="shadow"
+                    color="primary"
+                    size="xl"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+            <div className="my-auto">
+            <Button color="primary" href="/alat" tag="laboratorium">Lihat Selengkapnya</Button>
+            </div>
+            </Row>
+          </CardBody>
+        </Card>
+      </Col>
+      ):null}
         {ability.can("view", "lokasi") ? (
         <Col lg="3" sm="6">
           <Card className="card-congratulations-medal">
@@ -135,7 +163,7 @@ const Dashboard = (props) => {
                    Total
                   </CardText>
                   <h1 className="mb-75 mt-2 pt-50">
-                    {totalLokasi}
+                    {dataDashboard && dataDashboard.total_lokasi}
                   </h1>
                   
                 </Col>

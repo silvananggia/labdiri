@@ -25,6 +25,7 @@ use App\Http\Controllers\API\PengajuanKalibrasiController;
 use App\Http\Controllers\API\SerahTerimaController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SliderController;
+use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\ApiController;
 
 
@@ -59,6 +60,7 @@ Route::get('filteralat', [PeralatanController::class, 'searchPeralatan']);
 Route::get('filterlab', [LabController::class, 'searchLab']);
 Route::get('getslider', [SliderController::class, 'index']);
 
+
 Route::middleware(['auth:api','role','scope:admin'])->group( function () {
     Route::post('/fetch-laboratorium-data', [ApiController::class, 'FetchLaboratoriumData']);
     Route::post('/fetch-peralatan-data', [ApiController::class, 'FetchPeralatanData']);
@@ -72,6 +74,10 @@ Route::middleware(['auth:api','role','scope:admin'])->group( function () {
 
     Route::resource('laboratorium', LabController::class);
     Route::resource('alat', PeralatanController::class);
+    Route::get('/getdashboard', [DashboardController::class, 'index']);
+
+
+
 
     Route::resource('roles', RolesController::class);
     Route::resource('pages', PagesController::class);

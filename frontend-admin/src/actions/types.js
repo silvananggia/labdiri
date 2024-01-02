@@ -50,3 +50,5 @@ export const UPDATE_USER = "UPDATE_USER";
 export const DELETE_USER = "DELETE_USER";
 
 export const CHECK_AUTH = "CHECK_AUTH";
+
+export const GET_DASHBOARD = "GET_DASHBOARD";

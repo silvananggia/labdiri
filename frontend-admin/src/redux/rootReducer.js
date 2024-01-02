@@ -10,6 +10,7 @@ import alat from "./alat"
 import profile from "./profile"
 import pages from "./pages"
 import user from "./user"
+import dashboard from "./dashboard"
 
 
 
@@ -25,6 +26,7 @@ const rootReducer = {
   profile,
   pages,
   user,
+  dashboard,
   
 };
 
