@@ -6,6 +6,7 @@ import {
   CarouselIndicators,
   CarouselCaption
 } from 'reactstrap';
+import './CarouselHome.scss';
 
 const items = [
   {
@@ -69,50 +70,30 @@ class CarouselHome extends Component {
 
     const slides = items.map((item) => {
       return (
-        <CarouselItem 
+        <CarouselItem
           className="custom-tag drk"
           tag="div"
           key={item.key}
           onExiting={this.onExiting}
           onExited={this.onExited}
         >
-          <img 
-            src={item.src} 
-            alt={item.altText} 
-            className="carousel-image" 
+          <img
+            src={item.src}
+            alt={item.altText}
+            className="carousel-image"
           />
-          <CarouselCaption captionText={item.altText} captionHeader={item.caption} />
+           <CarouselCaption
+            captionText={item.altText}
+            captionHeader={item.caption}
+            className="custom-caption d-block"
+          />
+          
         </CarouselItem>
       );
     });
 
     return (
       <div>
-        <style>
-
-          {`
-          @media (max-width: 768px) {
-            .carousel-caption {
-              visibility: visible; /* Adjust the visibility for smaller screens */
-            }
-          }
-            .custom-tag {
-              max-width: 100%;
-              height: 500px;
-              background: black;
-            }
-            .carousel-image {
-              width: 100%;
-              height: auto;
-              object-fit: cover; /* This property ensures the image covers the entire container while maintaining its aspect ratio */
-            }
-            @media (max-width: 768px) {
-              .custom-tag {
-                height: 300px; /* Adjust the height for mobile devices */
-              }
-            }
-          `}
-        </style>
         <Carousel
           activeIndex={activeIndex}
           next={this.next}

@@ -301,7 +301,7 @@ function Alat(props) {
        <section className="listLab">
           <div className="container">
             <div>
-              <h2 className="titleLeft">Laboratorium</h2>
+              <h2 className="titleLeft">Laboratorium Lainnya</h2>
             </div>
             <div className="wrapper">
               <Row>

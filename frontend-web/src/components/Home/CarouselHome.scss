@@ -1,0 +1,40 @@
+/* CarouselHome.css */
+
+@media (max-width: 768px) {
+  .custom-caption {
+    display: block !important;
+    visibility: visible !important;
+  
+      height: 100%; /* Adjust the height for mobile devices */
+    
+
+  }
+  .custom-tag {
+    height: 300px;
+    
+  }
+}
+
+.custom-tag {
+  max-width: 100%;
+  height: 500px;
+  background: black;
+  position: relative;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+.custom-caption {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  width: 80%;
+}

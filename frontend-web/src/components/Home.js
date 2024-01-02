@@ -179,7 +179,7 @@ function Home(props) {
               </Row>
             </div>
 
-            <div style={{ paddingTop: "20px", marginTop: "20px" }}>
+            <div style={{ paddingTop: "20px", paddingBottom: "20px", marginTop: "20px" }}>
             <Button
               onClick={() => navigate("/alat-lab")}
               className="btn pull-right"
@@ -193,13 +193,13 @@ function Home(props) {
           </div>
         </section>
 
-        <section className="mitra">
+        {/*  <section className="mitra">
           <div className="container">
             <div>
-              <h2 className="titleLeft">Mitra</h2>
+              <h2 className="titleLeft">Mitra</h2> 
             </div>
           </div>
-        </section>
+        </section>  */}
       </Col>
     </Fragment>
   );
