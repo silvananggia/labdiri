@@ -105,7 +105,7 @@ class PeralatanController extends BaseController
             $alat = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
                 ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
                 ->select(
-                    'peralatan.idalatelsa AS alat_id',
+                    'peralatan.idalatelsa',
                     'peralatan.satuan_kerja_id',
                     'peralatan.kode_barang',
                     'peralatan.nama_barang',
