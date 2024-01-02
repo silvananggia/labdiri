@@ -17,9 +17,11 @@ import {
 } from "reactstrap";
 import LabImage from "./LabImage";
 import { getAllAlat, getAlatID } from "../actions/alat";
+import { getAllLaboratorium } from "../actions/laboratorium";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import CardSkeleton from "./Card/LabCardSkeleton"; // Adjust the path accordingly
+import LabCard from "./Card/LabCard"; // Adjust the path accordingly
 
 import { MapPin } from "react-feather";
 function Alat(props) {
@@ -31,7 +33,8 @@ function Alat(props) {
 
   useEffect(() => {
     props.getalat(code);
-    dispatch(getAllAlat("all", limit, currentPage,"true"));
+    dispatch(getAllAlat("all", limit, currentPage, "true"));
+    props.loadlaboratorium("all", limit, currentPage);
   }, [code, limit, currentPage]);
 
   const alatobj = useSelector((state) => state.alat.alatobj);
@@ -39,36 +42,34 @@ function Alat(props) {
   return (
     <>
       {props.alat.loading ? (
-           <section className="alatLab">
-           <div className="container">
-               <div>
-                   <h2 className="titleLeft">Alat {alatobj?.laboratorium || ""}</h2>
-               </div>
-               <div className="wrapper">
-                   <Row className="boxItem">
-                       {Array.from({ length: 12 }).map((_, index) => (
-                           <Col key={index}>
-                               <div className="boxAlat box">
-                                   <Skeleton width={250} height={150} />
-                               </div>
-                               <div className="boxTitle">
-                                   <Skeleton width={200} height={20} />
-                               </div>
-                               <div className="boxSubTitle">
-                                   <Skeleton width={200} height={20} />
-                               </div>
-                               <div className="boxSubTitle">
-                                   <Skeleton width={200} height={20} />
-                               </div>
-                           </Col>
-                       ))}
-                   </Row>
-               </div>
-           </div>
-       </section>
-      ) : alatobj &&
-      alatobj.images &&
-      alatobj.images.length > 0 ? (
+        <section className="alatLab">
+          <div className="container">
+            <div>
+              <h2 className="titleLeft">Alat {alatobj?.laboratorium || ""}</h2>
+            </div>
+            <div className="wrapper">
+              <Row className="boxItem">
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <Col key={index}>
+                    <div className="boxAlat box">
+                      <Skeleton width={250} height={150} />
+                    </div>
+                    <div className="boxTitle">
+                      <Skeleton width={200} height={20} />
+                    </div>
+                    <div className="boxSubTitle">
+                      <Skeleton width={200} height={20} />
+                    </div>
+                    <div className="boxSubTitle">
+                      <Skeleton width={200} height={20} />
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          </div>
+        </section>
+      ) : alatobj && alatobj.images && alatobj.images.length > 0 ? (
         <>
           <div className="breadcrumb">
             <div className="wrapper">
@@ -221,17 +222,17 @@ function Alat(props) {
 
                 {/* Second Column (Filter) */}
                 <Col sm="4">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-    <div>
-      <h2 className="titleLeft">Alat Lainnya</h2>
-    </div>
-    <div>
-      {/* Add the "Lihat Semua" link here */}
-      <Link to="/alat-lab" className="text-primary">
-        Lihat Semua
-      </Link>
-    </div>
-  </div>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <h2 className="titleLeft">Alat Lainnya</h2>
+                    </div>
+                    <div>
+                      {/* Add the "Lihat Semua" link here */}
+                      <Link to="/alat-lab" className="text-primary">
+                        Lihat Semua
+                      </Link>
+                    </div>
+                  </div>
                   {props.alat.loading
                     ? // Display skeletons while loading
                       Array.from({ length: 4 }).map((_, index) => (
@@ -240,10 +241,7 @@ function Alat(props) {
                     : Array.isArray(props.alat.alatlist.data)
                     ? props.alat.alatlist.data.map((item, index) => (
                         <Col key={item.id} className="mb-1">
-                          <Link
-                            color="primary"
-                            to={`/alat-lab/${item.id}`}
-                          >
+                          <Link color="primary" to={`/alat-lab/${item.id}`}>
                             <Suspense fallback={<CardSkeleton />}>
                               <Card className="d-flex flex-row">
                                 <CardImg
@@ -300,6 +298,52 @@ function Alat(props) {
           </section>
         </>
       ) : null}
+       <section className="listLab">
+          <div className="container">
+            <div>
+              <h2 className="titleLeft">Laboratorium</h2>
+            </div>
+            <div className="wrapper">
+              <Row>
+                {props.laboratorium.loading
+                  ? // Display skeletons while loading
+                    Array.from({ length: 4 }).map((_, index) => (
+                      <CardSkeleton />
+                    ))
+                  : props.laboratorium.laboratoriumlist && props.laboratorium.laboratoriumlist.data &&
+                    props.laboratorium.laboratoriumlist.data
+                      .slice(0, 4)
+                      .map((item, index) => (
+                        <Col key={item.id} className="my-3">
+                          <Link
+                            className="ms-2"
+                            color="primary"
+                            to={`/laboratorium/${item.id}`}
+                            style={{ textDecoration: "none", color: "black" }}
+                          >
+                            <Suspense fallback={<CardSkeleton />}>
+                              <LabCard item={item} />
+                            </Suspense>
+                          </Link>
+                        </Col>
+                      ))}
+              </Row>
+            </div>
+
+            <div style={{ paddingTop: "20px", marginTop: "20px" }}>
+              <Button
+                onClick={() => navigate("/laboratorium")}
+                className="btn pull-right"
+                color="primary"
+                size="sm"
+                style={{ float: "right" }}
+              >
+                Lihat Selengkapnya
+              </Button>
+            </div>
+          </div>
+        </section>
+     
     </>
   );
 }
@@ -307,13 +351,18 @@ function Alat(props) {
 const mapStateToProps = (state) => {
   return {
     alat: state.alat,
+    laboratorium: state.laboratorium,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    
     loadalat: (code) => dispatch(getAllAlat(code)),
     getalat: (code) => dispatch(getAlatID(code)),
+
+    loadlaboratorium: (idKat, limit, currentPage) => dispatch(getAllLaboratorium(idKat, limit, currentPage)),
+    
   };
 };
 

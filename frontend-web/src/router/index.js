@@ -13,6 +13,7 @@ const Hubungikami = lazy(() => import('../components/HubungiKami'));
 const VisiMisi = lazy(() => import('../components/VisiMisi'));
 const TentangKami = lazy(() => import('../components/TentangKami'));
 const StrukturOrganisasi = lazy(() => import('../components/StrukturOrganisasi'));
+const NotFound = lazy(() => import('../components/NotFound'));
 
 function MyRouter() {
     return (
@@ -70,6 +71,11 @@ function MyRouter() {
             <Route path='/hubungi-kami' element={
                 <Suspense fallback={<Spinner className="content-loader" />}>
                     <Hubungikami />
+                </Suspense>
+            } />
+            <Route path='*' element={
+                <Suspense fallback={<Spinner className="content-loader" />}>
+                    <NotFound />
                 </Suspense>
             } />
         </Routes>
