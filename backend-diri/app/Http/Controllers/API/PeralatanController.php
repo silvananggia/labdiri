@@ -23,12 +23,19 @@ class PeralatanController extends BaseController
         try {
             $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
             $page = request('page', 1); // Get the requested page from the request
+            $search = request('search', null);
 
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
-            $alat = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
+            $alatQuery = Peralatan::leftJoin('peralatan_detail', 'peralatan.idalatelsa', '=', 'peralatan_detail.idalat')
                 ->leftJoin('lab', 'lab.satuan_kerja_id', '=', 'peralatan.satuan_kerja_id')
-                ->select('peralatan.idalatelsa', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status_ketersediaan', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan')
-                ->paginate($perPage, ['*'], 'page', $page);
+                ->select('peralatan.idalatelsa', 'peralatan.satuan_kerja_id', 'peralatan.kode_barang', 'peralatan.nama_barang', 'peralatan.merk', 'peralatan.kondisi', 'peralatan_detail.status', 'lab.nama AS nama_lab', 'lab.lokasi_kawasan')
+                ;
+
+            if ($search) {
+                    $alatQuery->whereRaw('LOWER(peralatan.nama_barang) like ?', ["%" . strtolower($search) . "%"]);
+                }
+
+                $alat = $alatQuery->paginate($perPage, ['*'], 'page', $page);
 
             return $this->sendResponse([
                 'data' => AlatResource::collection($alat),
@@ -211,13 +218,17 @@ class PeralatanController extends BaseController
             $alat->spesifikasi = $request->spesifikasi;
             $alat->fungsi = $request->fungsi;
             $alat->deskripsi = $request->deskripsi;
+            $alat->keterangan = $request->keterangan;
             $alat->dimensi = $request->dimensi;
             $alat->kondisi = $request->kondisi;
-            $alat->keterangan = $request->keterangan;
-            $alat->link_elsa = $request->link_elsa;
             $alat->noseri = $request->noseri;
             $alat->sumber_tenaga = $request->sumber_tenaga;
+            $alat->status_kalibrasi = $request->status_kalibrasi;
+            $alat->tahun_kalibrasi = $request->tahun_kalibrasi;
+            $alat->harga_perolehan = $request->harga_perolehan;
+            $alat->link_elsa = $request->link_elsa;
             $alat->lokasi_penyimpanan = $request->lokasi_penyimpanan;
+            $alat->status = $request->status;
 
             $alat->save();
 

@@ -14,6 +14,7 @@ import { getAllLaboratorium } from "../../actions/laboratorium";
 import {
   updateUser,
   getUserID,
+  getRoles,
 } from "../../actions/user";
 
 // ** Reactstrap Imports
@@ -45,18 +46,7 @@ import htmlToDraft from "html-to-draftjs";
 import "@styles/react/libs/editor/editor.scss";
 import "@styles/base/plugins/forms/form-quill-editor.scss";
 
-const statusOptions = [
-  { id: "1", value: 1, label: "Aktif" },
-  { id: "2", value: 0, label: "Tidak Aktif" },
-];
 
-
-const roleOptions = [
-  { id: "1", value: "admin", label: " Admin" },
-  { id: "2", value: "koordinator", label: "Koordinator" },
-  { id: "3", value: "manajer", label: "Manajer" },
-  { id: "4", value: "public", label: "Public" },
-];
 
 const LaboratoriumUpdate = () => {
   const dispatch = useDispatch();
@@ -68,7 +58,9 @@ const LaboratoriumUpdate = () => {
   const [nama, namachange] = useState("");
   const [name, namechange] = useState("");
   const [email, emailchange] = useState("");
-  const [role, rolechange] = useState("");
+ 
+  const [rolename, rolenamechange] = useState("");
+   const [role, rolechange] = useState("");
   const [isVerified, isverifiedchange] = useState("");
   const [inputlaboratorium, setvaluelab] = useState("");
   const [lab_id, setIdlab] = useState("");
@@ -85,9 +77,6 @@ const LaboratoriumUpdate = () => {
 
 
 
-  useEffect(() => {
-    dispatch(getAllLaboratorium());
-  }, []);
 
   const listLaboratorium = useSelector(
     (state) => state.laboratorium.laboratoriumlist
@@ -95,26 +84,22 @@ const LaboratoriumUpdate = () => {
 
   useEffect(() => {
     dispatch(getUserID(code));
+    dispatch(getRoles());
   }, []);
 
   const userobj = useSelector((state) => state.user.userobj);
+  const rolelist = useSelector((state) => state.user.rolelist);
 
   useEffect(() => {
     if (userobj) {
       idchange(userobj.id);
-      namechange(userobj.name);
-      emailchange(userobj.email);
+      emailchange(userobj.username_intra);
   
-      if (userobj.roles) {
-        isverifiedchange(userobj.roles.isVerified);
-        rolechange(userobj.roles.role);
-        if (userobj.roles.laboratorium) {
-          setIdlab(userobj.roles.laboratorium.id);
-        }
-      }
+      rolechange(userobj.role);
+    
+      
     }
   }, [userobj]);
-
 
   const handleInputChange = (value) => {
     setValue(value);
@@ -138,8 +123,6 @@ const LaboratoriumUpdate = () => {
     e.preventDefault();
     const userobj = {
       role,
-      isVerified,
-      lab_id,
     };
   
     // Assuming your `dispatch` function returns a promise
@@ -179,23 +162,10 @@ const LaboratoriumUpdate = () => {
             <CardBody>
               <Form onSubmit={handlesubmit}>
                 <Row>
+                  
                   <Col md="6" sm="12" className="mb-1">
                     <Label className="form-label" for="namaLaboratorium">
-                      Nama
-                    </Label>
-                    <Input
-                      type="text"
-                      name="nama"
-                      id="namaLaboratorium"
-                      placeholder="Nama "
-                      value={name}
-                      onChange={(e) => namechange(e.target.value)}
-                      disabled
-                    />
-                  </Col>
-                  <Col md="6" sm="12" className="mb-1">
-                    <Label className="form-label" for="namaLaboratorium">
-                      E-Mail
+                      User Intra
                     </Label>
                     <Input
                       type="text"
@@ -211,55 +181,25 @@ const LaboratoriumUpdate = () => {
                     <Label className="form-label" for="CompanyMulti">
                       Role
                     </Label>
-                    <Select
-                      theme={selectThemeColors}
-                      className="status"
-                      classNamePrefix="Status"
-                      isClearable={false}
-                      options={roleOptions} // Since the list is provided by the store, provide it directly
-                      value={roleOptions.find((obj) => obj.value === role)}
-                      getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => e.id}
-                      onInputChange={handleRoleInputChange}
-                      onChange={handleRoleChange}
-                    />
+
+<Select
+                  id="lokasi"
+                  options={[
+                    { value: "", label: "Pilih Roles" },
+                    ...(rolelist?.map((role) => ({
+                      value: role.id,
+                      label: role.name,
+                    })) || []),
+                  ]}
+                  value={{ value: role, label: rolename }}
+                  onChange={(selectedOption) => {
+                    rolenamechange(selectedOption.label);
+                  rolechange(selectedOption.value); // Set flokasi based on selected option label
+                  }}
+                  />
                   </Col>
-                  <Col md="6" sm="12" className="mb-1">
-                <Label className="form-label" for="CompanyMulti">
-                  Laboratorium
-                </Label>
-                <Select
-                  theme={selectThemeColors}
-                  className="status"
-                  classNamePrefix="Status"
-                  isClearable={false}
-                  cacheOptions
-                  defaultOptions
-                  options={listLaboratorium}
-                  value={listLaboratorium.find((obj) => obj.id === lab_id)}
-                  getOptionLabel={({ nama }) => nama}
-                  getOptionValue={({ id }) => id}
-                  onInputChange={handleInputLab}
-                  onChange={handleLabChange}
-                />
-              </Col>
-                  <Col md="6" sm="12" className="mb-1">
-                    <Label className="form-label" for="CompanyMulti">
-                      Status
-                    </Label>
-                    <Select
-                      theme={selectThemeColors}
-                      className="status"
-                      classNamePrefix="Status"
-                      isClearable={false}
-                      options={statusOptions} // Since the list is provided by the store, provide it directly
-                      value={statusOptions.find((obj) => obj.value === isVerified)}
-                      getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => e.id}
-                      onInputChange={handleInputChange}
-                      onChange={handleChange}
-                    />
-                  </Col>
+                 
+                
 
                   <Col sm="12">
                     <div className="d-flex">

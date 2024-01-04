@@ -45,12 +45,15 @@ const ProfileLab = lazy(() => import("../../views/Laboratorium/ProfileLab"));
 const Alat = lazy(() => import("../../views/Alat/Alat"));
 const AlatCreate = lazy(() => import("../../views/Alat/AlatCreate"));
 const AlatUpdate = lazy(() => import("../../views/Alat/AlatUpdate"));
+const AlatView = lazy(() => import("../../views/Alat/AlatView"));
 const Pages = lazy(() => import("../../views/Pages/Pages"));
 const PagesCreate = lazy(() => import("../../views/Pages/PagesCreate"));
 const PagesUpdate = lazy(() => import("../../views/Pages/PagesUpdate"));
+const PagesView = lazy(() => import("../../views/Pages/PagesView"));
 const User = lazy(() => import("../../views/User/User"));
 const UserCreate = lazy(() => import("../../views/User/UserCreate"));
 const UserUpdate = lazy(() => import("../../views/User/UserUpdate"));
+const UserView = lazy(() => import("../../views/User/UserView"));
 
 // ** Merge Routes
 const Routes = [
@@ -200,6 +203,14 @@ const Routes = [
     }
   },
   {
+    path: "/admin/alat/view/:code",
+    element: <AlatView />,
+    meta: {
+      action: 'view',
+      resource: 'alat'
+    }
+  },
+  {
     path: "/admin/pages",
     element: <Pages />,
     meta: {
@@ -220,6 +231,14 @@ const Routes = [
     element: <PagesUpdate />,
     meta: {
       action: 'edit',
+      resource: 'pages'
+    }
+  },
+  {
+    path: "/admin/pages/view/:code",
+    element: <PagesView />,
+    meta: {
+      action: 'view',
       resource: 'pages'
     }
   },
@@ -246,7 +265,16 @@ const Routes = [
       action: 'update',
       resource: 'user'
     }
+  },
+  {
+    path: "/admin/user/view/:code",
+    element: <UserView />,
+    meta: {
+      action: 'view',
+      resource: 'user'
+    }
   },/* 
+  /* 
   {
     path: "/login",
     element: <Login />,

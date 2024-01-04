@@ -1,7 +1,15 @@
 import React, { useContext, useEffect, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { connect,useSelector } from "react-redux";
-import { Edit, Plus, Trash2, TrendingUp, ThumbsUp, Box } from "react-feather";
+import { connect, useSelector } from "react-redux";
+import {
+  Edit,
+  Plus,
+  Trash2,
+  TrendingUp,
+  ThumbsUp,
+  Eye,
+  Box,
+} from "react-feather";
 import {
   Badge,
   Label,
@@ -23,8 +31,8 @@ import Avatar from "@components/avatar";
 import toast from "react-hot-toast";
 import DataTable from "react-data-table-component";
 import ReactPaginate from "react-paginate";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 import { AbilityContext } from "@src/utility/context/Can";
 import { getAllAlat, deleteAlat, getAlatLab } from "../../actions/alat";
@@ -32,7 +40,7 @@ import AlatStatistics from "../Card/CardAlat";
 // ** Styles
 import "@styles/react/libs/tables/react-dataTable-component.scss";
 
-const MySwal = withReactContent(Swal)
+const MySwal = withReactContent(Swal);
 
 const Alat = (props) => {
   const ability = useContext(AbilityContext);
@@ -45,59 +53,52 @@ const Alat = (props) => {
   const pageRangeDisplayed = 3;
 
   useEffect(() => {
-
-    props.loadAlat( rowsPerPage, currentPage);
-  
-}, [ rowsPerPage, currentPage]);
-
+    props.loadAlat(globalFilter,rowsPerPage, currentPage);
+  }, [globalFilter,rowsPerPage, currentPage]);
 
   const handleDelete = (code) => {
     return MySwal.fire({
-      title: 'Anda yakin akan menghapus data tersebut?',
+      title: "Anda yakin akan menghapus data tersebut?",
       text: "Data yang sudah di hapus tidak dapat dikembalikan!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Hapus',
+      confirmButtonText: "Hapus",
       customClass: {
-        confirmButton: 'btn btn-primary',
-        cancelButton: 'btn btn-outline-danger ms-1'
+        confirmButton: "btn btn-primary",
+        cancelButton: "btn btn-outline-danger ms-1",
       },
       buttonsStyling: false,
-      
     }).then(function (result) {
-     
       if (result.value) {
         props.removeAlat(code);
 
         if (user && user.role === "admin") {
-          props.loadAlat( rowsPerPage, currentPage);
+          props.loadAlat(rowsPerPage, currentPage);
         } else {
           props.loadAlatLab(user.laboratorium);
         }
 
         MySwal.fire({
-          
-          icon: 'success',
-          title: 'Deleted!',
-          text: 'Your file has been deleted.',
+          icon: "success",
+          title: "Deleted!",
+          text: "Your file has been deleted.",
           customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-       // toast.success("Alat Berhasil Dihapus.");
+            confirmButton: "btn btn-success",
+          },
+        });
+        // toast.success("Alat Berhasil Dihapus.");
       }
-    })
-
+    });
   };
 
   const handlePerPage = (e) => {
     const selectedRowsPerPage = parseInt(e.target.value, 10);
     setRowsPerPage(selectedRowsPerPage);
     setLimit(selectedRowsPerPage);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
-/*   useEffect(() => {
+  /*   useEffect(() => {
     if (user && user.role == "admin") {
       props.loadAlat();
     } else {
@@ -107,38 +108,40 @@ const Alat = (props) => {
 
   const columns = [
     {
-      name: "Nama Alat",
-      selector: (row) => row.nama,
-      sortable: true,
-    },
-    {
-      name: "Merk",
-      selector: (row) => row.merk,
-      sortable: true,
-    },
-    {
-      name: "Lokasi",
-      selector: (row) => row.laboratorium,
-      sortable: true,
-    },
-    {
-      name: "Aksi",
+      name: "",
+      width: "120px",
       cell: (row) => (
         <div className="column-action d-flex align-items-center">
-          <Link color="primary" to={"edit/" + row.id}>
-            <Edit
-              className="cursor-pointer"
-              size={17}
-              id={`send-tooltip-${row.id}`}
-            />
-            <UncontrolledTooltip
-              placement="top"
-              target={`send-tooltip-${row.id}`}
-            >
-              Ubah
-            </UncontrolledTooltip>
-          </Link>
-         {/*  <Link
+            <Link to={"view/" + row.id} className="cursor-pointer btn btn-info btn-sm">
+          <Eye
+            className="xs-1"
+            size={12}
+            style={{  stroke: "white"}}
+            id={`view-tooltip-${row.id}`}
+          />
+          <UncontrolledTooltip
+            placement="top"
+            target={`view-tooltip-${row.id}`}
+          >
+            Lihat
+          </UncontrolledTooltip>
+        </Link>
+        <span style={{ margin: "0 2px" }}></span>
+        <Link to={"edit/" + row.id} className="cursor-pointer btn btn-primary btn-sm">
+          <Edit
+            className="xs-1"
+            size={12}
+            style={{  stroke: "white"}}
+            id={`send-tooltip-${row.id}`}
+          />
+          <UncontrolledTooltip
+            placement="top"
+            target={`send-tooltip-${row.id}`}
+          >
+            Ubah
+          </UncontrolledTooltip>
+        </Link>
+          {/*  <Link
             onClick={() => {
               handleDelete(row.id);
             }}
@@ -156,15 +159,40 @@ const Alat = (props) => {
         </div>
       ),
     },
+    {
+      name: "Nama",
+      selector: (row) => row.nama,
+      sortable: true,
+      width: "300px",
+    },
+    {
+      name: "Merk",
+      selector: (row) => row.merk,
+      sortable: true,
+    },
+    {
+      name: "Laboratorium",
+      selector: (row) => row.laboratorium,
+      sortable: true,
+      width: "300px",
+    },
+    {
+      name: "Status",
+      cell: (row) => (
+        <Badge
+          pill
+          color={row.status === "aktif" ? "light-success" : "light-danger"}
+          className="me-1"
+        >
+          {row.status === "aktif" ? "Aktif" : "Tidak Aktif"}
+        </Badge>
+      ),
+    },
   ];
-
-  
 
   const paginatedData = props.alat.alatlist.data || []; // Ensure to have an empty array if data is undefined
   const pagination = props.alat.alatlist.metadata;
   const totalPages = pagination ? pagination.last_page : 0;
-
-
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -186,24 +214,23 @@ const Alat = (props) => {
 
     return (
       <ReactPaginate
-      pageCount={totalPages}
-      pageRangeDisplayed={ pageRangeDisplayed}
-      marginPagesDisplayed={2}
-      onPageChange={({ selected }) => handlePageChange(selected + 1)}
-      forcePage={currentPage - 1}
-      previousLabel={""}
-      nextLabel={""}
-      breakLabel={"..."}
-      activeClassName="active"
-      pageClassName="page-item"
-      breakClassName="page-item"
-      nextLinkClassName="page-link"
-      pageLinkClassName="page-link"
-      breakLinkClassName="page-link"
-      previousLinkClassName="page-link"
-      nextClassName="page-item next-item"
-      previousClassName="page-item prev-item"
-     
+        pageCount={totalPages}
+        pageRangeDisplayed={pageRangeDisplayed}
+        marginPagesDisplayed={2}
+        onPageChange={({ selected }) => handlePageChange(selected + 1)}
+        forcePage={currentPage - 1}
+        previousLabel={""}
+        nextLabel={""}
+        breakLabel={"..."}
+        activeClassName="active"
+        pageClassName="page-item"
+        breakClassName="page-item"
+        nextLinkClassName="page-link"
+        pageLinkClassName="page-link"
+        breakLinkClassName="page-link"
+        previousLinkClassName="page-link"
+        nextClassName="page-item next-item"
+        previousClassName="page-item prev-item"
         containerClassName={
           "pagination react-paginate separated-pagination pagination-sm justify-content-end pe-1"
         }
@@ -211,12 +238,11 @@ const Alat = (props) => {
     );
   };
 
-
   return (
     <Fragment>
       <Row>
         <Col sm="12">
-        {/*   <AlatStatistics alat={props.alat} /> */}
+          {/*   <AlatStatistics alat={props.alat} /> */}
 
           <Card>
             <CardHeader className="border-bottom">
@@ -263,7 +289,7 @@ const Alat = (props) => {
                   type="text"
                   bsSize="sm"
                   id="search-input"
-                  placeholder="Search Nama Alat, Merk, Jumlah, Lokasi"
+                  placeholder="Cari Nama Alat"
                   value={globalFilter}
                   onChange={(e) => setGlobalFilter(e.target.value)}
                 />
@@ -297,7 +323,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadAlat: (limit, currentPage) => dispatch(getAllAlat(limit, currentPage)),
+    loadAlat: (search,limit, currentPage) => dispatch(getAllAlat(search,limit, currentPage)),
     loadAlatLab: (id) => dispatch(getAlatLab(id)),
     removeAlat: (code) => dispatch(deleteAlat(code)),
   };

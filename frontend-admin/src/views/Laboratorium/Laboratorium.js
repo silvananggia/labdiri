@@ -25,14 +25,14 @@ const Laboratorium = (props) => {
   const ability = useContext(AbilityContext);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const pageRangeDisplayed = 3;
 
   useEffect(() => {
 
-    props.loadlaboratorium( rowsPerPage, currentPage);
+    props.loadlaboratorium(globalFilter, rowsPerPage, currentPage);
   
-}, [ rowsPerPage, currentPage]);
+}, [globalFilter, rowsPerPage, currentPage]);
 
 
   const handleDelete = (code) => {
@@ -51,6 +51,41 @@ const Laboratorium = (props) => {
 
   const columns = [
     {
+      name: "",
+      width: "120px",
+      cell: (row) => (
+        <div className="column-action d-flex align-items-center">
+            <Link to={"view/" + row.id} className="cursor-pointer btn btn-info btn-sm">
+          <Eye
+            className="xs-1"
+            size={12}
+            style={{  stroke: "white"}}
+            id={`view-tooltip-${row.id}`}
+          />
+          <UncontrolledTooltip
+            placement="top"
+            target={`view-tooltip-${row.id}`}
+          >
+            Lihat
+          </UncontrolledTooltip>
+        </Link>
+        <span style={{ margin: "0 2px" }}></span>
+        <Link to={"edit/" + row.id} className="cursor-pointer btn btn-primary btn-sm">
+          <Edit
+            className="xs-1"
+            size={12}
+            style={{  stroke: "white"}}
+            id={`send-tooltip-${row.id}`}
+          />
+          <UncontrolledTooltip
+            placement="top"
+            target={`send-tooltip-${row.id}`}
+          >
+            Ubah
+          </UncontrolledTooltip>
+        </Link>
+        </div>
+      )},{
       name: "Laboratorium",
       selector: (row) => row.nama,
       sortable: true,
@@ -69,48 +104,7 @@ const Laboratorium = (props) => {
         </Badge>
       ),
     },
-    {
-      name: "Aksi",
-      cell: (row) => (
-        <div className="column-action d-flex align-items-center">
-  {ability.can("view", "laboratorium") ? (
-    <Link color="primary" to={"view/" + row.id}>
-      <Eye className="cursor-pointer" size={17} id={`view-tooltip-${row.id}`} />
-      <UncontrolledTooltip placement="top" target={`view-tooltip-${row.id}`}>
-        Lihat
-      </UncontrolledTooltip>
-    </Link>
-  ) : null}
-  
-  {ability.can("update", "laboratorium") ? (
-    <>
-      {/* Add spacing here */}
-      <span style={{ margin: '0 5px' }}></span>
-
-      <Link color="primary" to={"edit/" + row.id}>
-        <Edit className="cursor-pointer" size={17} id={`edit-tooltip-${row.id}`} />
-        <UncontrolledTooltip placement="top" target={`edit-tooltip-${row.id}`}>
-          Ubah
-        </UncontrolledTooltip>
-      </Link>
-    </>
-  ) : null}
-         {/*  {ability.can("delete", "laboratorium") ? (
-          <Link
-            onClick={() => {
-              handleDelete(row.id);
-            }}
-            to={props.Laboratorium}
-            id={`pw-tooltip-${row.id}`}
-          >
-            <Trash2 size={17} className="mx-1" />
-            <UncontrolledTooltip placement="top" target={`pw-tooltip-${row.id}`}>
-              Hapus
-            </UncontrolledTooltip>
-          </Link>): null} */}
-        </div>
-      ),
-    },
+    
   ];
 
 
@@ -213,7 +207,7 @@ const Laboratorium = (props) => {
                     type="text"
                     bsSize="sm"
                     id="search-input"
-                    placeholder="Search Laboratorium, Kategori, Lokasi, Status"
+                    placeholder="Cari Nama Laboratorium"
                     value={globalFilter}
                     onChange={(e) => setGlobalFilter(e.target.value)}
                   />
@@ -246,8 +240,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadlaboratorium: ( limit, currentPage) =>
-    dispatch(getAllLaboratorium( limit, currentPage)),
+    loadlaboratorium: ( search,limit, currentPage) =>
+    dispatch(getAllLaboratorium( search,limit, currentPage)),
     removeLaboratorium: (code) => dispatch(deleteLaboratorium(code)),
   };
 };

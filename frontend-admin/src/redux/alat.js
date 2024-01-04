@@ -44,8 +44,8 @@ function alatReducer(alat = initialstate, action) {
           return {
             ...alat,
             errmessage: "",
-            alatlist: action.payload,
-            alatobj: alat.alatobj,
+          //  alatlist: action.payload,
+           // alatobj: alat.alatobj,
           };
 
     case DELETE_ALAT:

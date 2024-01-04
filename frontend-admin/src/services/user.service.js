@@ -28,12 +28,17 @@ const deleteUser = (id) => {
   return axios.delete(`/user/${id}`, { headers: authHeader() });
 };
 
+const getRoles = () => {
+  return axios.get("/roles", { headers: authHeader() });
+};
+
 const UserService = {
     getUserAll,
     getUser,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getRoles
 };
 
 export default UserService;

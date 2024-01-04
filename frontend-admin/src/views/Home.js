@@ -1,10 +1,20 @@
-import React, { useContext,useState, useEffect, useCallback } from "react";
+import React, {Fragment, useContext,useState, useEffect, useCallback } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
-import { Edit, Plus, Trash2, Award, Tool,MapPin, Thermometer } from "react-feather";
+import { Edit, Plus, Trash2, Tool,MapPin, Thermometer,  Eye,
+  Cpu,
+  Heart,
+  Award,
+  Truck,
+  Server,
+  Activity,
+  ShoppingBag,
+  AlertOctagon,
+  MessageSquare } from "react-feather";
 
 // ** Custom Components
 import Avatar from "@components/avatar";
 
+import StatsHorizontal from '@components/widgets/stats/StatsHorizontal'
 import {
   Badge,
   Label,
@@ -12,9 +22,7 @@ import {
   Button,
   Row,
   Col,
-  Card,
-  CardBody,
-  CardText,
+  Card, CardHeader, CardTitle,CardSubtitle, CardBody
 } from "reactstrap";
 import { AbilityContext } from "@src/utility/context/Can";
 
@@ -22,10 +30,12 @@ import { AbilityContext } from "@src/utility/context/Can";
 import decorationLeft from "@src/assets/images/elements/decore-left.png";
 import decorationRight from "@src/assets/images/elements/decore-right.png";
 import medal from "@src/assets/images/illustration/badge.svg";
-
+import StatsVertical from '@components/widgets/stats/StatsVertical'
 //import AlatStatistics from "./Card/CardAlat";
-import { getDashboard } from "../actions/dashboard";
-
+import { getDashboard,getStatAlat ,getStatAlatLokasi, getStatLabLokasi} from "../actions/dashboard";
+import BarChart from "./Chart/BarChart";
+import PieChart from "./Chart/PieChart";
+import DonutChart from "./Chart/DonutChart";
 const Dashboard = (props) => {
   const dispatch = useDispatch();
   //const user = JSON.parse(localStorage.getItem("user"));
@@ -39,162 +49,97 @@ const Dashboard = (props) => {
 
   useEffect(() => {
     dispatch(getDashboard());
+    dispatch(getStatAlat());
+    dispatch(getStatAlatLokasi());
+    dispatch(getStatLabLokasi());
 
   }, []);
 
-  const dataDashboard = useSelector((state) => state.dashboard.dashborddata);
+  const dataDashboard = useSelector((state) => state.dashboard.dashboarddata);
+  const dataBarChart = useSelector((state) => state.dashboard.statalat);
+  const dataAlatLok = useSelector((state) => state.dashboard.statlokalat);
+  const dataLabLok = useSelector((state) => state.dashboard.statlablok);
 
 
   return (
-    <div id="dashboard-ecommerce">
-      <Row className="match-height">
-       {/*  <Col lg="6" sm="12">
-          <Card className="card-congratulations">
-            <CardBody className="text-center">
-              <img
-                className="congratulations-img-left"
-                src={decorationLeft}
-                alt="decor-left"
-              />
-              <img
-                className="congratulations-img-right"
-                src={decorationRight}
-                alt="decor-right"
-              />
-              <Avatar
-                icon={<Award size={28} />}
-                className="shadow"
-                color="primary"
-                size="xl"
-              />
-              <div className="text-center">
-                <h1 className="mb-1 text-white">Halo {user.name},</h1>
-                <CardText className="m-auto w-75">
-                  Selamat bekerja sebagai :{" "}
-                  <strong>
-                    {user.role} -{" "}
-                    {matchingLaboratorium && matchingLaboratorium.nama}
-                  </strong>
-                </CardText>
-              </div>
-            </CardBody>
-          </Card> 
-        </Col> */}
-        {ability.can("view", "laboratorium") ? (
-        
-        <Col lg="3" sm="6">
-        <Card className="card-congratulations-medal">
-          <CardBody>
-            <Row>
-              <Col>
-                <h5>Lab</h5>
-                <CardText className="font-small-3">
-                 Total
-                </CardText>
-                <h1 className="mb-75 mt-2 pt-50">
-                {dataDashboard && dataDashboard.total_labs}
-                </h1>
-                
-              </Col>
-              <Col className="mb-2">
-                <div className="d-flex align-items-center">
-                  <Avatar
-                    icon={<Thermometer size={28} />}
-                    className="shadow"
-                    color="primary"
-                    size="xl"
-                  />
-                </div>
-              </Col>
-            </Row>
-            <Row>
-            <div className="my-auto">
-            <Button color="primary" href="/laboratorium" tag="laboratorium">Lihat Selengkapnya</Button>
-            </div>
-            </Row>
-          </CardBody>
-        </Card>
-      </Col>
-      ):null}
-      {ability.can("view", "laboratorium") ? (
-        
-        <Col lg="3" sm="6">
-        <Card className="card-congratulations-medal">
-          <CardBody>
-            <Row>
-              <Col>
-                <h5>Alat</h5>
-                <CardText className="font-small-3">
-                 Total
-                </CardText>
-                <h1 className="mb-75 mt-2 pt-50">
-                {dataDashboard && dataDashboard.total_peralatan}
-                </h1>
-                
-              </Col>
-              <Col className="mb-2">
-                <div className="d-flex align-items-center">
-                  <Avatar
-                    icon={<Tool size={28} />}
-                    className="shadow"
-                    color="primary"
-                    size="xl"
-                  />
-                </div>
-              </Col>
-            </Row>
-            <Row>
-            <div className="my-auto">
-            <Button color="primary" href="/alat" tag="laboratorium">Lihat Selengkapnya</Button>
-            </div>
-            </Row>
-          </CardBody>
-        </Card>
-      </Col>
-      ):null}
-        {ability.can("view", "lokasi") ? (
-        <Col lg="3" sm="6">
-          <Card className="card-congratulations-medal">
-            <CardBody>
+    <Fragment>
+{/* 
               <Row>
-                <Col>
-                  <h5>Lokasi</h5>
-                  <CardText className="font-small-3">
-                   Total
-                  </CardText>
-                  <h1 className="mb-75 mt-2 pt-50">
-                    {dataDashboard && dataDashboard.total_lokasi}
-                  </h1>
-                  
-                </Col>
-                <Col className="mb-2">
-                  <div className="d-flex align-items-center">
-                    <Avatar
-                      icon={<MapPin size={28} />}
-                      className="shadow"
-                      color="primary"
-                      size="xl"
-                    />
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-              <div className="my-auto">
-              <Button color="primary" href="/lokasi" tag="laboratorium">Lihat Selengkapnya</Button>
-              </div>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>)
-        : null }
+        <Col xl='2' md='4' sm='6'>
+          <StatsVertical icon={<Thermometer size={28} />} color='info' stats= {dataDashboard && dataDashboard.total_labs} statTitle='Laboratorium' />
+        </Col>
+        <Col xl='2' md='4' sm='6'>
+          <StatsVertical icon={<Tool size={28} />} color='success' stats= {dataDashboard && dataDashboard.total_peralatan} statTitle='Peralatan' />
+        </Col>
+        <Col xl='2' md='4' sm='6'>
+          <StatsVertical icon={<MapPin size={28} />} color='primary' stats={dataDashboard && dataDashboard.total_lokasi} statTitle='Lokasi' />
+        </Col>
+
+      </Row> */}
+      <Row>
+        {/* Stats With Icons Horizontal */}
+        <Col lg='3' sm='6'>
+          <StatsHorizontal icon={<Thermometer size={21} />} color='info' stats={dataDashboard && dataDashboard.total_labs}  statTitle='Laboratorium' />
+        </Col>
+        <Col lg='3' sm='6'>
+          <StatsHorizontal icon={<Tool size={21} />} color='success' stats={dataDashboard && dataDashboard.total_peralatan} statTitle='Peralatan' />
+        </Col>
+        <Col lg='3' sm='6'>
+          <StatsHorizontal icon={<MapPin size={21} />} color='danger' stats={dataDashboard && dataDashboard.total_lokasi} statTitle='Lokasi' />
+        </Col>
+
+        {/* Stats With Icons Horizontal */}
       </Row>
-      <Row className="match-height">
-        <Col lg="12" sm="6">
-         {/*  <AlatStatistics alat={props.alat} /> */}
+
+      <Row className='match-height'>
+        <Col lg="6" sm="12">
+        <Card>
+      <CardHeader className="d-flex justify-content-between align-items-sm-center align-items-start flex-sm-row flex-column">
+        <div>
+          <CardTitle className="mb-75" tag="h4">
+          Jumlah Laboratorium Per Lokasi
+          </CardTitle>
+          
+        </div>
+      </CardHeader>
+
+      <CardBody>
+        {dataLabLok && <DonutChart data={dataLabLok} />}
+   
+        </CardBody>
+        </Card>
+
+        </Col>
+        <Col lg="6" sm="12">
+        <Card>
+      <CardHeader className="d-flex justify-content-between align-items-sm-center align-items-start flex-sm-row flex-column">
+        <div>
+          <CardTitle className="mb-75" tag="h4">
+          Jumlah Alat Per Lokasi
+          </CardTitle>
+        </div>
+      </CardHeader>
+
+      <CardBody>
+        {dataAlatLok && <PieChart data={dataAlatLok} />}
+    
+        </CardBody>
+        </Card>
+
         </Col>
       </Row>
-    </div>
-  );
+
+
+      <Row className='match-height'>
+        <Col lg="12" sm="12">
+      
+        <BarChart data={dataBarChart} />
+
+        </Col>
+      </Row>
+    </Fragment>
+  )
+
 };
 const mapStateToProps = (state) => {
   return {

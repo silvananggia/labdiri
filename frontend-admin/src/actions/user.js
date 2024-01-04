@@ -4,6 +4,7 @@ import {
     GET_USER_ID,
     UPDATE_USER,
     DELETE_USER,
+    GET_ROLES,
   } from "./types";
   
   import UserService from "../services/user.service";
@@ -77,5 +78,16 @@ import {
     }
   };
   
-  
+  export const getRoles = () => async (dispatch) => {
+    try {
+      const res = await UserService.getRoles();
+
+      dispatch({
+        type: GET_ROLES,
+        payload: res.data.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   

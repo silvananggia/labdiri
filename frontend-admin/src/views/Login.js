@@ -154,10 +154,14 @@ const Login = () => {
           const canvas = canvasRef.current;
           const ctx = canvas.getContext("2d");
           initializeCaptcha(ctx);
+                  // Clear captcha input
+                  setFieldValue("captcha", "");
         }
       } catch (error) {
         const errorMessage = error.response ? error.response.data.error : "An error occurred";
         dispatch(setMessage(errorMessage));
+                // Clear captcha input
+                setFieldValue("captcha", "");
 
       } finally {
         setLoading(false);
@@ -168,6 +172,9 @@ const Login = () => {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
       initializeCaptcha(ctx);
+
+              // Clear captcha input
+              setFieldValue("captcha", "");
     }
   };
 
@@ -289,7 +296,7 @@ const Login = () => {
             </Formik>
             <p className="text-center mt-2">
               <span className="me-25">Belum Memiliki Akun?</span>
-              <Link to="/register">
+              <Link to="https://sso.brin.go.id">
                 <span>Daftar</span>
               </Link>
             </p>

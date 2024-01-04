@@ -75,6 +75,10 @@ Route::middleware(['auth:api','role','scope:admin'])->group( function () {
     Route::resource('laboratorium', LabController::class);
     Route::resource('alat', PeralatanController::class);
     Route::get('/getdashboard', [DashboardController::class, 'index']);
+    Route::get('/getstatalat', [DashboardController::class, 'getStatAlat']);
+    Route::get('/getstatlablokasi', [DashboardController::class, 'getStatLabLokasi']);
+    Route::get('/getstatalatlokasi', [DashboardController::class, 'getStatAlatLokasi']);
+
 
 
 

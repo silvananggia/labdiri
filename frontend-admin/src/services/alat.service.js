@@ -1,8 +1,8 @@
 import axios from "../api/axios";
 import authHeader from "./auth-header";
 
-const getAlatAll = (limit,page) => {
-  return axios.get(`/peralatan?limit=${limit}&page=${page}`, { headers: authHeader() });
+const getAlatAll = (search,limit,page) => {
+  return axios.get(`/peralatan?search=${search}&limit=${limit}&page=${page}`, { headers: authHeader() });
 };
 
 const getAlatLab = (id) => {

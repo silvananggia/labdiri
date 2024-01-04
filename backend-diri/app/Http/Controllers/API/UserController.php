@@ -36,7 +36,7 @@ class UserController extends BaseController
         $input = $request->all();
 
         $validator = Validator::make($input, [
-            'nama' => 'required'
+            'role' => 'required'
         ]);
 
         if($validator->fails()){
@@ -71,8 +71,7 @@ class UserController extends BaseController
 
     $validator = Validator::make($input, [
         'role' => 'required',
-        'isVerified' => 'required',
-        'lab_id' => 'required',
+
     ]);
 
     if ($validator->fails()) {
@@ -85,16 +84,13 @@ class UserController extends BaseController
         return $this->sendError('User not found.');
     }
 
-    if ($user->role) {
-    $role = Roles::find($user->role->id);
 
-        $role->role = $input['role'];
-        $role->isVerified = $input['isVerified'];
-        $role->lab_id = $input['lab_id'];
-        $role->update(); // Save the updated role
+    $user->role_id = $input['role'];
+
+    $user->update(); // Save the updated role
 
         return $this->sendResponse(new UserResource($user), 'Data updated successfully.');
-    }
+
 
 }
 

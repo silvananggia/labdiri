@@ -54,7 +54,7 @@ function laboratoriumReducer(laboratorium = initialstate, action) {
         ...laboratorium,
         loading: false,
         errmessage: "",
-        laboratoriumlist: action.payload,
+// laboratoriumlist: action.payload,
       };
 
     case DELETE_LABORATORIUM:

@@ -26,9 +26,9 @@ import {
     }
   };
   
-  export const getAllLaboratorium = (limit,page) => async (dispatch) => {
+  export const getAllLaboratorium = (search,limit,page) => async (dispatch) => {
     try {
-      const res = await LaboratoriumService.getLaboratoriumAll(limit,page);
+      const res = await LaboratoriumService.getLaboratoriumAll(search,limit,page);
 
       dispatch({
         type: GET_LABORATORIUM,

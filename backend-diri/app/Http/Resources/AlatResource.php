@@ -29,6 +29,7 @@ class AlatResource extends JsonResource
             'deskripsi' => $this->deskripsi,
             'laboratorium' =>  $this->nama_lab,
             'lokasi_kawasan' =>  $this->lokasi_kawasan,
+            'status' =>  $this->status,
             'images' => $media->isNotEmpty()
                 ? ImagesResource::collection($media)
              : [['url' => $defaultImageUrl]]

@@ -58,13 +58,14 @@ class LabController extends BaseController
         try {
             $perPage = request('limit', 10); // Get the requested limit from the request, default to 10 if not provided
             $page = request('page', 1); // Get the requested page from the request
-
+            $search = request('search', null);
             // Retrieve all labs with their associated lab details (and create lab detail if not exist)
-            $labs = Lab::with('labdetail')
-            ->paginate($perPage, ['*'], 'page', $page);
+            $labQuery = Lab::with('labdetail');
             // Loop through the labs and add data to lab_detail if it doesn't exist
-
-
+            if ($search) {
+                $labQuery->whereRaw('LOWER(lab.nama) like ?', ["%" . strtolower($search) . "%"]);
+            }
+            $labs = $labQuery->paginate($perPage, ['*'], 'page', $page);
             // return $this->sendResponse(LaboratoriumResource::collection($labs), 'Data retrieved successfully.');
             return $this->sendResponse([
                 'data' => LaboratoriumResource::collection($labs),

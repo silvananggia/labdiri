@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { Edit, Plus, Trash2 } from "react-feather";
+import { Edit, Plus, Trash2, Eye } from "react-feather";
 import {
   Label,
   Input,
@@ -44,6 +44,41 @@ const Pages = (props) => {
 
   const columns = [
     {
+      name: "",
+      width: "120px",
+      cell: (row) => (
+        <div className="column-action d-flex align-items-center">
+            <Link to={"view/" + row.id} className="cursor-pointer btn btn-info btn-sm">
+          <Eye
+            className="xs-1"
+            size={12}
+            style={{  stroke: "white"}}
+            id={`view-tooltip-${row.id}`}
+          />
+          <UncontrolledTooltip
+            placement="top"
+            target={`view-tooltip-${row.id}`}
+          >
+            Lihat
+          </UncontrolledTooltip>
+        </Link>
+        <span style={{ margin: "0 2px" }}></span>
+        <Link to={"edit/" + row.id} className="cursor-pointer btn btn-primary btn-sm">
+          <Edit
+            className="xs-1"
+            size={12}
+            style={{  stroke: "white"}}
+            id={`send-tooltip-${row.id}`}
+          />
+          <UncontrolledTooltip
+            placement="top"
+            target={`send-tooltip-${row.id}`}
+          >
+            Ubah
+          </UncontrolledTooltip>
+        </Link>
+        </div>)},
+    {
       name: "Title",
       selector: (row) => row.title,
       sortable: true,
@@ -53,7 +88,7 @@ const Pages = (props) => {
       selector: (row) => row.slug,
       sortable: true,
     },
-
+/* 
     {
       name: "Aksi",
       cell: (row) => (
@@ -78,7 +113,7 @@ const Pages = (props) => {
           </Link>
         </div>
       ),
-    },
+    }, */
   ];
 
   const filteredData = props.pages.pageslist.filter((item) =>

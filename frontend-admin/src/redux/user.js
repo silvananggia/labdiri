@@ -4,6 +4,7 @@ import {
   GET_USER_ID,
   UPDATE_USER,
   DELETE_USER,
+  GET_ROLES,
 } from "../actions/types";
 
 const initialstate = {
@@ -52,7 +53,14 @@ function userReducer(user = initialstate, action) {
         loading: false,
         userobj: action.payload.data,
       };
-
+      case GET_ROLES:
+        return {
+          loading: false,
+          errmessage: "",
+          userlist: user.userlist,
+          rolelist: action.payload,
+          userobj: user.userobj,
+        };
     default:
       return user;
   }

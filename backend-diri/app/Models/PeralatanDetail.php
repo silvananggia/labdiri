@@ -19,7 +19,7 @@ class PeralatanDetail extends Model implements HasMedia
 
     public $incrementing = false;
 
-    protected $fillable = ['idalat','spesifikasi','fungsi','deskripsi','dimensi','harga_perolehan','keterangan','status_kalibrasi','tahun_kalibrasi','link_elsa','noseri','sumber_tenaga','lokasi_penyimpanan','status'];
+    protected $fillable = ['idalat','spesifikasi','fungsi','deskripsi','keterangan','dimensi','kondisi','noseri','sumber_tenaga','status_kalibrasi','tahun_kalibrasi','harga_perolehan','link_elsa','lokasi_penyimpanan','status'];
 
 
     public function peralatan()

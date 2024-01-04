@@ -50,6 +50,7 @@ import CustomEditor from "../Editor/CustomEditor";
 // ** Styles
 import "@styles/react/libs/editor/editor.scss";
 import "@styles/base/plugins/forms/form-quill-editor.scss";
+import '@styles/react/libs/file-uploader/file-uploader.scss'
 
 const statusOptions = [
   { id: "1", value: "aktif", label: "Aktif" },
@@ -355,7 +356,7 @@ const LaboratoriumUpdate = () => {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle tag="h4">Foto Alat</CardTitle>
+            <CardTitle tag="h4">Foto Laboratorium</CardTitle>
           </CardHeader>
 
           <CardBody>

@@ -26,9 +26,10 @@ import {
     }
   };
   
-  export const getAllAlat = (limit,page) => async (dispatch) => {
+  export const getAllAlat = (search,limit,page) => async (dispatch) => {
     try {
-      const res = await AlatService.getAlatAll(limit,page);
+     
+      const res = await AlatService.getAlatAll(search,limit,page);
 
       dispatch({
         type: GET_ALAT,

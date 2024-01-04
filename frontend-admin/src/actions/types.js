@@ -50,5 +50,9 @@ export const UPDATE_USER = "UPDATE_USER";
 export const DELETE_USER = "DELETE_USER";
 
 export const CHECK_AUTH = "CHECK_AUTH";
+export const GET_ROLES = "GET_ROLES";
 
 export const GET_DASHBOARD = "GET_DASHBOARD";
+export const GET_STAT_ALAT = "GET_STAT_ALAT";
+export const GET_STAT_LABLOKASI = "GET_STAT_LABLOKASI";
+export const GET_STAT_LOKASIALAT = "GET_STAT_LOKASIALAT";

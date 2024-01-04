@@ -3,6 +3,16 @@ import { useState, useEffect, Fragment, React } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // ** Third Party Components
 import Select from "react-select";
+import { useDropzone } from "react-dropzone";
+import {
+  Plus,
+  Minus,
+  FileText,
+  X,
+  DownloadCloud,
+  AlertCircle,
+} from "react-feather";
+import Swal from "sweetalert2";
 
 // ** Utils
 import { selectThemeColors } from "@utils";
@@ -17,17 +27,20 @@ import {
 
 // ** Reactstrap Imports
 import {
+  Alert,
   Card,
   CardHeader,
   CardTitle,
   CardBody,
-  Label,
+  CardText,
   Input,
   FormText,
   Row,
   Col,
   Form,
   Button,
+  ListGroup,
+  ListGroupItem,
 } from "reactstrap";
 
 import {
@@ -39,15 +52,10 @@ import {
 import { Editor } from "react-draft-wysiwyg";
 import { convertToHTML, convertFromHTML } from "draft-convert";
 import htmlToDraft from "html-to-draftjs";
-
+import CustomEditor from "../Editor/CustomEditor";
 // ** Styles
 import "@styles/react/libs/editor/editor.scss";
 import "@styles/base/plugins/forms/form-quill-editor.scss";
-
-const statusOptions = [
-  { id: "1", value: "1", label: "Aktif" },
-  { id: "2", value: "0", label: "Tidak Aktif" },
-];
 
 const LaboratoriumUpdate = () => {
   const dispatch = useDispatch();
@@ -55,329 +63,165 @@ const LaboratoriumUpdate = () => {
 
   const [id, idchange] = useState(0);
   const { code } = useParams();
-  const [inputkategori, setvaluekat] = useState("");
-  const [idkategori, setIdkategori] = useState("");
-  const [inputlokasi, setvaluelok] = useState("");
-  const [idlokasi, setIdlokasi] = useState("");
+
+  const [lokasi, setLokasi] = useState("");
+  const [desc, setDesc] = useState("");
   const [nama, namachange] = useState("");
   const [inputValue, setValue] = useState("");
   const [status, statuschange] = useState("aktif");
-
-  useEffect(() => {
-    dispatch(getAllLokasi());
-    dispatch(getAllKategori());
-  }, []);
-
-  const listLokasi = useSelector((state) => state.lokasi.lokasilist);
-
-  const handleInputLokasiChange = (value) => {
-    setvaluelok(value);
-  };
-
-  const handleLokasiChange = (value) => {
-    setIdlokasi(value.id);
-   
-  };
-
-  const listKategori = useSelector((state) => state.kategori.kategorilist);
-
-  const handleInputKategoriChange = (value) => {
-    setvaluekat(value);
-  };
-
-  const handleKategoriChange = (value) => {
-    setIdkategori(value.id);
-  };
-
-  const handleInputChange = (value) => {
-    setValue(value);
-  };
-
-  const handleChange = (e) => {
-    statuschange(e.value);
-  };
 
   const laboratoriumobj = useSelector(
     (state) => state.laboratorium.laboratoriumobj
   );
 
-  const handlesubmit = (e) => {
-    e.preventDefault();
-    const laboratoriumobj = {
-      idkategori,
-      idlokasi,
-      nama,
-      tusi,
-      deskripsi,
-      posisi_strategis,
-      sdm,
-      status,
-    };
-    dispatch(updateLaboratorium(id, laboratoriumobj));
-    navigate("/laboratorium");
-  };
-
   useEffect(() => {
     dispatch(getLaboratoriumID(code));
   }, []);
-
-  useEffect(() => {
-    if (laboratoriumobj) {
-      idchange(laboratoriumobj.id);
-      setIdkategori(laboratoriumobj.idkategori);
-      setIdlokasi(laboratoriumobj.idlokasi);
-      namachange(laboratoriumobj.nama);
-      statuschange(laboratoriumobj.status);
-    }
-  }, [laboratoriumobj]);
-
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
-  const [tusi, setConvertedtusi] = useState(null);
-
-  const initialContent = laboratoriumobj.tusi;
-  const initialContent2 = laboratoriumobj.deskripsi;
-  const initialContent3 = laboratoriumobj.posisi_strategis;
-  const initialContent4 = laboratoriumobj.sdm;
-
-  useEffect(() => {
-    // Check if initialContent exists before creating the editorState
-    if (initialContent) {
-      const contentBlock = htmlToDraft(initialContent);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState = EditorState.createWithContent(contentState);
-      setEditorState(initialEditorState); // Set the initial editor state
-    }
-  }, [initialContent]);
-
-  const [editordeskState, setEditorDeskState] = useState(() =>
-    EditorState.createEmpty()
-  );
-  const [deskripsi, setConvertedDeskripsi] = useState(null);
-
-  useEffect(() => {
-    if (initialContent2) {
-      const contentBlock = htmlToDraft(initialContent2);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState2 = EditorState.createWithContent(contentState);
-      setEditorDeskState(initialEditorState2); // Set the initial editor state
-    }
-  }, [initialContent2]);
-
-  const [editorposisiState, setEditorPosisiState] = useState(() =>
-    EditorState.createEmpty()
-  );
-  const [posisi_strategis, setConvertedPosisi] = useState(null);
-
-  useEffect(() => {
-    if (initialContent3) {
-      const contentBlock = htmlToDraft(initialContent3);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState3 = EditorState.createWithContent(contentState);
-      setEditorPosisiState(initialEditorState3); // Set the initial editor state
-    }
-  }, [initialContent3]);
-
-  const [editorsdmState, setEditorSdmState] = useState(() =>
-    EditorState.createEmpty()
-  );
-  const [sdm, setConvertedSdm] = useState(null);
-
-  useEffect(() => {
-    if (initialContent4) {
-      const contentBlock = htmlToDraft(initialContent4);
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const initialEditorState4 = EditorState.createWithContent(contentState);
-      setEditorSdmState(initialEditorState4); // Set the initial editor state
-    }
-  }, [initialContent3]);
-
-  useEffect(() => {
-    let html = convertToHTML(editorState.getCurrentContent());
-    setConvertedtusi(html);
-  }, [editorState]);
-
-  useEffect(() => {
-    let html = convertToHTML(editordeskState.getCurrentContent());
-    setConvertedDeskripsi(html);
-  }, [editordeskState]);
-
-  useEffect(() => {
-    let html = convertToHTML(editorposisiState.getCurrentContent());
-    setConvertedPosisi(html);
-  }, [editorposisiState]);
-
-  useEffect(() => {
-    let html = convertToHTML(editorsdmState.getCurrentContent());
-    setConvertedSdm(html);
-  }, [editorsdmState]);
-
+  const handleEditClick = () => {
+    // Navigate to the edit page
+    navigate(`/admin/laboratorium/edit/${code}`);
+  };
   return (
     <Fragment>
-      <Row className="invoice-list-wrapper">
-        <Col sm="12">
-          <Card>
-            <CardHeader>
-              <CardTitle tag="h4">Tambah Laboratorium</CardTitle>
-            </CardHeader>
+      <Card>
+        <CardHeader>
+          <CardTitle tag="h4">Laboratorium</CardTitle>
+        </CardHeader>
 
-            <CardBody>
-              <Form onSubmit={handlesubmit}>
-                <Row>
-                  <Col md="6" sm="12" className="mb-1">
-                    <Label className="form-label" for="namaLaboratorium">
-                      Nama Laboratorium
-                    </Label>
-                    <Input
-                      type="text"
-                      name="nama"
-                      id="namaLaboratorium"
-                      placeholder="Nama Laboratorium"
-                      value={nama}
-                      onChange={(e) => namachange(e.target.value)}
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md="6" sm="12" className="mb-1">
-                    <Label className="form-label" for="CompanyMulti">
-                      Kategori Laboratorium
-                    </Label>
-                    <Select
-                      theme={selectThemeColors}
-                      className="status"
-                      classNamePrefix="Status"
-                      isClearable={false}
-                      cacheOptions
-                      defaultOptions
-                      options={listKategori} // Since the list is provided by the store, provide it directly
-                      value={listKategori.find(
-                        (obj) => obj.value === idkategori
-                      )}
-                      getOptionLabel={({ nama }) => nama}
-                      getOptionValue={({ id }) => id}
-                      onInputChange={handleInputKategoriChange}
-                      onChange={handleKategoriChange}
-                    />
-                  </Col>
-                  <Col md="6" sm="12" className="mb-1">
-                    <Label className="form-label" for="CompanyMulti">
-                      Lokasi Laboratorium
-                    </Label>
-                    <Select
-                      theme={selectThemeColors}
-                      className="status"
-                      classNamePrefix="Status"
-                      isClearable={false}
-                      cacheOptions
-                      defaultOptions
-                      options={listLokasi}
-                      value={listLokasi.find((obj) => obj.value === idlokasi)}
-                      getOptionLabel={({ nama }) => nama}
-                      getOptionValue={({ id }) => id}
-                      onInputChange={handleInputLokasiChange}
-                      onChange={handleLokasiChange}
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col sm="12" className="mb-1">
-                    <Label className="form-label" for="keteranganLokasi">
-                      Tugas & Fungsi
-                    </Label>
+        <CardBody>
+          <Row>
+            <Col md="6" sm="12" className="mb-1">
+              <h6 className="form-h6" for="namaLaboratorium">
+                Nama Laboratorium
+              </h6>
+              <Input
+                type="text"
+                name="nama"
+                id="namaLaboratorium"
+                placeholder="Nama Laboratorium"
+                value={laboratoriumobj.nama}
+                disabled
+                style={{ backgroundColor: "#f0f0f0", color: "#666" }}
+              />
+            </Col>
+            <Col md="6" sm="12" className="mb-1">
+              <h6 className="form-h6" for="namaLaboratorium">
+                Lokasi
+              </h6>
+              <Input
+                type="text"
+                name="lokasi"
+                id="namaLaboratorium"
+                value={laboratoriumobj.lokasi_kawasan}
+                disabled
+                style={{ backgroundColor: "#f0f0f0", color: "#666" }}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md="12" sm="12" className="mb-1">
+              <h6 className="form-h6" for="namaLaboratorium">
+                Deskripsi
+              </h6>
+              <Input
+                type="textarea"
+                name="lokasi"
+                id="namaLaboratorium"
+                value={laboratoriumobj.desc}
+                disabled
+                style={{ backgroundColor: "#f0f0f0", color: "#666" }}
+              />
+            </Col>
+          </Row>
+          <Alert color="danger">
+            <div className="alert-body">
+              <AlertCircle size={15} />{" "}
+              <span className="ms-1">
+                <strong> *) </strong> Data diatas diambil dari Sistem{" "}
+                <strong>ELSA</strong>, Jika terdapat perubahaan dapat
+                disesuaikan melalui sistem <strong>ELSA</strong>.
+              </span>
+            </div>
+          </Alert>
+        </CardBody>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle tag="h4">Detail Laboratorium</CardTitle>
+          <Row className="mt-2">
+          <Col className="d-flex justify-content-end">
+            <Button color="secondary" className="me-1" onClick={() => navigate(-1)}>
+              Kembali
+            </Button>
+            <Button color="primary" onClick={handleEditClick}>
+              Edit
+            </Button>
+          </Col>
+        </Row>
+        </CardHeader>
 
-                    <Editor
-                      editorState={editorState}
-                      onEditorStateChange={setEditorState}
-                      wrapperClassName="wrapper-class"
-                      editorClassName="editor-class"
-                      toolbarClassName="toolbar-class"
-                    />
-                  </Col>
-                  <Col sm="12" className="mb-1">
-                    <Label className="form-label" for="latitudeLokasi">
-                      Deskripsi
-                    </Label>
-                    <Editor
-                      editorState={editordeskState}
-                      onEditorStateChange={setEditorDeskState}
-                      wrapperClassName="wrapper-class"
-                      editorClassName="editor-class"
-                      toolbarClassName="toolbar-class"
-                    />
-                  </Col>
-                  <Col sm="12" className="mb-1">
-                    <Label className="form-label" for="latitudeLokasi">
-                      Posisi Strategis
-                    </Label>
-                    <Editor
-                      editorState={editorposisiState}
-                      onEditorStateChange={setEditorPosisiState}
-                      wrapperClassName="wrapper-class"
-                      editorClassName="editor-class"
-                      toolbarClassName="toolbar-class"
-                    />
-                  </Col>
-                  <Col sm="12" className="mb-1">
-                    <Label className="form-label" for="longitudeLokasi">
-                      SDM
-                    </Label>
-                    <Editor
-                      editorState={editorsdmState}
-                      onEditorStateChange={setEditorSdmState}
-                      wrapperClassName="wrapper-class"
-                      editorClassName="editor-class"
-                      toolbarClassName="toolbar-class"
-                    />
-                  </Col>
-                  <Col md="6" sm="12" className="mb-1">
-                    <Label className="form-label" for="CompanyMulti">
-                      Status
-                    </Label>
-                    <Select
-                      theme={selectThemeColors}
-                      className="status"
-                      classNamePrefix="Status"
-                      isClearable={false}
-                      options={statusOptions} // Since the list is provided by the store, provide it directly
-                      value={statusOptions.find((obj) => obj.value === status)}
-                      getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => e.id}
-                      onInputChange={handleInputChange}
-                      onChange={handleChange}
-                    />
-                  </Col>
+        <CardBody>
+          <Row>
+            <Col sm="12" className="mb-1">
+              <h6 className="form-h6" for="keteranganLokasi">
+                Tugas & Fungsi
+              </h6>
+              <p dangerouslySetInnerHTML={{ __html: laboratoriumobj.tusi }} />
+            </Col>
 
-                  <Col sm="12">
-                    <div className="d-flex">
-                      <Button className="me-1" color="primary" type="submit">
-                        Simpan
-                      </Button>
-                      <Button
-                        outline
-                        color="secondary"
-                        type="reset"
-                        onClick={() => navigate(-1)}
-                      >
-                        Kembali
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+            <Col sm="12" className="mb-1">
+              <h6 className="form-h6" for="keteranganLokasi">
+                Posisi Strategis
+              </h6>
+              <p dangerouslySetInnerHTML={{ __html: laboratoriumobj.posisi }} />
+            </Col>
+
+            <Col sm="12" className="mb-1">
+              <h6 className="form-h6" for="keteranganLokasi">
+                SDM
+              </h6>
+              <p dangerouslySetInnerHTML={{ __html: laboratoriumobj.sdm }} />
+            </Col>
+
+            <Col md="6" sm="12" className="mb-1">
+              <h6 className="form-h6" for="CompanyMulti">
+                Status
+              </h6>
+              <p>{laboratoriumobj.status}</p>
+            </Col>
+          </Row>
+
+          {/* Display single image */}
+          {laboratoriumobj.image && (
+            <Row className="mt-2">
+              <Col md="6" sm="12" className="mb-1">
+                <h6 className="form-h6" for="alatImage">
+                  Foto Alat
+                </h6>
+                <img src={laboratoriumobj.image.url} alt="Alat" style={{ maxWidth: 'auto', height: '200px' }} />
+              </Col>
+            </Row>
+          )}
+
+          {/* Display multiple images if available */}
+          {laboratoriumobj.images && laboratoriumobj.images.length > 0 && (
+            <Row className="mt-2">
+              <Col md="12">
+                <h6 className="form-h6" for="alatImages">
+                 Foto Alat
+                </h6>
+                <ListGroup>
+                  {laboratoriumobj.images.map((image, index) => (
+                    <ListGroupItem key={index}>
+                      <img src={image.url} alt={`Alat ${index + 1}`} style={{ maxWidth: 'auto', height: '200px' }} />
+                    </ListGroupItem>
+                  ))}
+                </ListGroup>
+              </Col>
+            </Row>
+          )}
+        </CardBody>
+      </Card>
     </Fragment>
   );
 };
